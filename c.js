@@ -1,3 +1,12 @@
+//
+// Goofing around trying to wrap my head around how the
+// canvas rotation works and how I can translate a point
+// back to where it started for "rotate in place"
+//
+// I think I removed the "blank the screen" gear and added
+// some better canvas outlines.
+//
+
 var go = true;
 var period = 500;
 

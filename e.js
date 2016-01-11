@@ -1,3 +1,12 @@
+//
+// Draw a bunch of dots in various places to try
+// and figure out where the center point is and WHY?
+//
+// I thought I had it figured out how to a point on
+// a rotated canvas back to its original point.
+// NOPE.
+//
+
 var go = true;
 var period = 500;
 var c;

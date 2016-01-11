@@ -6,6 +6,9 @@
 // (Make sure you're getting the context from the right
 //  canvas. D'oh!)
 //
+//  NOTE: REQUIRES 2nd canvas ("canvas2") that was in a.html
+//  for the original commit of this file but is now gone.
+//
 //  I'm totally confused why I have to specify 300,130
 //  as the left-middle point of the circle in canvas1
 //  to get it to show up at the bottom right corner

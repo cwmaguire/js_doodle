@@ -1,3 +1,10 @@
+//
+// Rotate the canvas outline boxes
+//
+// Can't remember exactly what I was trying to see with this one
+// or how long I used it for.
+//
+
 var go = true;
 var period = 500;
 

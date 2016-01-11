@@ -1,3 +1,12 @@
+//
+// Drawing multiple dots that rotate around again but this
+// time with a line that shows the rotation anglthat rotate
+// around again but this time with a line that shows the
+// rotation angle.
+//
+// (... and scratching my head and thinking "What the heck?").
+//
+
 var go = true;
 var period = 500;
 var c;

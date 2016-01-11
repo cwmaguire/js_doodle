@@ -1,3 +1,8 @@
+//
+// No idea where I was going with this one.
+// Doesn't seem to do anything.
+//
+
 var go = false;
 var period = 500;
 var c;
