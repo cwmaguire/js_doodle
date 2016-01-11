@@ -20,7 +20,7 @@ function animate(times){
   }
   var date = new Date();
   var time = (new Date()).getTime();
-  var numRotates = draw_time(times);
+  var numRotates = render(times);
   var nextAnimateTime = time + period - (new Date()).getTime();
   //console.log("Writing out at " + nextAnimateTime);
   console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
@@ -29,106 +29,56 @@ function animate(times){
   }
 }
 
-function draw_time(times){
+function render(times){
   var c = document.getElementById("canvas1");
   var ctx = c.getContext("2d");
   var time = (new Date()).getTime();
-  //var x = Math.floor((time % c.width) / 2);
-  //var y = Math.floor((time % c.height) / 2);
-  //var x = 10;
-  //var y = 10;
   var x = Math.floor(c.width / 2);
   var y = Math.floor(c.height / 2);
-  //var r = time % 255;
-  //var g = (time >> 3) % 255;
-  //var b = (time >> 6) % 255;
-  //var rgb = ("#" + r.toString(16) + g.toString(16) + b.toString(16)).toUpperCase();
   var rgb = timeRGB(time);
-  //console.log("Writing out " + time + " at " + x + ", " + y + " with: " + rgb + ")");
-  //ctx.fillStyle = "#FF0000";
+
   if(times.length >= 16){
     times.shift();
   }
-  //times = times.slice(1,7);
+
   var rotations = times[0].rotations;
   times.push({rgb: rgb, time: time, rotations: (times[times.length - 1].rotations + 1) % 64});
 
   ctx.fillStyle = "#FFFFFF";
+
   ctx.fillRect(0, 0, c.width, c.height);
-
-  //console.log("Rotations: " + rotations);
-
-  var i = 0;
-
-  ctx.fillStyle = "#FFFFFF";
-  ctx.strokeStyle = "#FFFFFF";
-
-  for(i = 0; i < 4; i++){
-    ctx.rotate(2 * Math.PI / 4);
-    ctx.translate(11,-32);
-  }
-
-  ctx.fillStyle = "#000000";
-  ctx.strokeRect(0, 0, c.width, c.height);
-
-  //for(i = 0; i < (rotations - 1); i++){
-    //console.log("rotating");
-    //ctx.beginPath();
-    //ctx.moveTo(10, Math.floor(c.height / 2));
-    //ctx.lineTo(c.width - 10, Math.floor(c.height / 2));
-    //ctx.stroke();
-
-    //ctx.rotate(Math.PI / 16);
-    //ctx.transform(1,0.5,0.5,1,1,1);
-    //ctx.translate(Math.floor(x / 8), Math.floor(-y / 1.6));
-  //}
 
   ctx.fillStyle = "#000000";
   ctx.strokeStyle = "#000000";
 
-  //ctx.rotate(Math.PI / 16);
-  //ctx.translate(11, -32);
+  ctx.strokeRect(0, 0, c.width, c.height);
+  ctx.strokeRect(4, 4, c.width - 4, c.height - 4);
 
+  var i = 0;
   for(i = 0; i < 33 - times.length; i++){
-    angle = Math.PI / 16;
+    out("t1", 33 - times.length);
+    angle = 2 * Math.PI / 32;
     ctx.rotate(angle);
-    //ctx.translate(11, -32);
     xTrans = x - (Math.cos(angle) * x);
-    yTrans = Math.sin(angle) * x;
-    ctx.translate(xTrans, -yTrans);
+    out("t2", "xTrans = " + xTrans);
+    yTrans = -Math.sin(angle) * x;
+    out("t3", "yTrans = " + yTrans);
+    ctx.translate(xTrans, yTrans);
   }
 
   for(i = 0; i < times.length; i++){
-  //for(i = times.length - 1; i >= 0; i--){
-    //console.log("Times length: " + times.length);
-
-    //ctx.beginPath();
-    //ctx.moveTo(0, Math.floor(c.height / 2));
-    //ctx.lineTo(c.width, Math.floor(c.height / 2));
-    //ctx.moveTo(Math.floor(c.width / 2), 0);
-    //ctx.lineTo(Math.floor(c.height / 2), c.height);
-    //ctx.stroke();
-    //console.log(times[i]);
-    //ctx.transform(1,0.9,0.9,1,1,1);
-    //ctx.translate(Math.floor(x / 8), Math.floor(-y / 1.6));
     ctx.fillStyle = times[i].rgb;
     ctx.strokeStyle = times[i].rgb;
-    //ctx.strokeText(times[i].time, x - 30, y);
     if(i % 16 == 0){
-      //ctx.strokeText("A    n    g    i    e", x - 30, y);
       ctx.strokeText("A    n    g    i    e", x, y);
       ctx.strokeRect(x - 5, y - 5, x + 5, y + 5);
       ctx.strokeRect(x - 2, y - 2, x + 2, y + 2);
     }
     angle = Math.PI / 16;
-    //ctx.translate(11, -32);
     xTrans = x - (Math.cos(angle) * x);
     yTrans = Math.sin(angle) * x;
     ctx.rotate(angle);
     ctx.translate(xTrans, -yTrans);
-    //ctx.rotate(Math.PI / 16);
-    //ctx.translate(11, -32);
-    //ctx.fillRect(0, 0, c.width, c.height);
   }
 
   return times;
@@ -187,4 +137,8 @@ function rotate(){
   ctx.translate(Math.floor(6), Math.floor(-7));
   ctx.fillStyle = "#FF0000";
   ctx.fillRect(10, 10, 40, 40);
+}
+
+function out(field, text){
+  document.getElementById(field).value = text;
 }
