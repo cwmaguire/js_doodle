@@ -66,8 +66,8 @@ function render(){
   ctx.lineTo(x, y);
   ctx.stroke();
 
-  transAngle = 2 * Math.PI / 32;
-  ctx.rotate(transAngle);
+  //transAngle = 2 * Math.PI / 32;
+  //ctx.rotate(transAngle);
   //out("t4", "Angle: " + angle);
   //xTrans = x - (Math.cos(angle) * x);
   //out("t2", "xTrans = " + xTrans);
@@ -86,6 +86,9 @@ function render(){
   ctx.beginPath();
   ctx.arc(0, 0, z * 30, 0, downAngle, false);
   ctx.stroke();
+
+  transAngle = 2 * Math.PI / 32;
+  ctx.rotate(transAngle);
 
   // 2) Find angle between [(0,0), P1] and [P1, P2]
   var downAngle2 = downAngle + transAngle
@@ -112,8 +115,14 @@ function render(){
   var dx = Math.asin(p1p2ToVert) * p1p2;
   var dy = Math.acos(p1p2ToVert) * p1p2;
 
+  ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(x + dx, y - dy);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x, y - dy);
   ctx.stroke();
 
   //ctx.translate(-dx, -dy);
