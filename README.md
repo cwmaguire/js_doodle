@@ -26,6 +26,9 @@ tweaking it so it used the same format.)
 
 Learnings:
 * Canvas rotations rotate from origin, not center
+ * D'oh! You can draw "outside" the context so you can put the context
+   in the conext in the center and rotate it around the middle of the
+   canvas
 * It takes me a lot of trig to get a point back to where it started
   after rotating
 * A bottom canvas will show through an empty top canvas
@@ -35,3 +38,5 @@ Learnings:
   your own animation loop. (But you still might need to calculate
   the right times to draw instead of drawing as fast as the screen
   can re-draw.)
+* Forgetting ctx.beginPath() will prevent you from clearing the
+  canvas.
