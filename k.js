@@ -55,6 +55,10 @@ function render(ctx, c){
   ctx.moveTo(0, 0);
   ctx.lineTo(200, 200);
   ctx.stroke();
+  ctx.fillRect(50, 50, 30, 30);
+  ctx.fillRect(10, 50, 30, 30);
+  ctx.fillRect(50, 10, 30, 30);
+  ctx.fillRect(10, 10, 30, 30);
 }
 
 function clear(ctx, c){
