@@ -3,10 +3,10 @@ var c;
 var h;
 var w;
 var mid;
-var MAX = 80;
+var MAX = 40;
 var dist = 5;
 
-out("t1", "50");
+out("t1", "500");
 init();
 
 function init(){
@@ -19,8 +19,8 @@ function init(){
 function animate(){
   var c = document.getElementById("canvas1");
   var ctx = c.getContext("2d");
-  var h = c.height = 500;
-  var w = c.width = 500;
+  var h = c.height = 300;
+  var w = c.width = 300;
   ctx.translate(w / 2, h / 2);
   animate_(ctx, []);
 }
@@ -61,7 +61,9 @@ function updateObjects(objs){
   }
 
   //var randAngle = Math.random() * Math.PI / 15 - (Math.PI / 30);
-  var randAngle = Math.random() * Math.PI / 4;
+  //var randAngle = Math.random() * Math.PI / 8 - (Math.PI / 16);
+  // Maybe base this angle off the last angle
+  var randAngle = last.a + (Math.random() * Math.PI / 16 - (Math.PI / 32));
   out("t5", "randAngle: " + randAngle);
   out("t6", "last: " + last);
   //var dx = Math.floor(dist * Math.sin(randAngle));
@@ -100,13 +102,20 @@ function render(ctx, c, objs){
   var totalA = 0;
   var dx;
   var dy;
+  //var radIncrement = radianIncrement(objs.length);
   ctx.beginPath();
   ctx.moveTo(0, 0);
   for(i = 0; i < objs.length; i++){
   //for(i = objs.length - 1; i >= 0; i--){
     obj = objs[i];
     out("t9", "obj.a: " + obj.a);
-    totalA += (obj.a * 4 / (objs.length * 2 - i));
+    //totalA += (obj.a * 4 / (objs.length * 2 - i));
+
+    //totalA += sinWaveAngleWeight(radIncrement, i, obj.a);
+    //out("t9", "Increment: " + i);
+    out("t10", "Increments: " + objs.length);
+    totalA += incrementalWeight(objs.length, i + 1, obj.a);
+    //totalA += obj.a;
     out("t8", "totalA: " + totalA);
     //dx = Math.floor(obj.x * Math.sin(obj.a));
     //dy = Math.floor(obj.y * Math.cos(obj.a));
@@ -120,6 +129,23 @@ function render(ctx, c, objs){
     ctx.lineTo(totalX, totalY);
   }
   ctx.stroke();
+}
+
+function incrementalWeight(increments, increment, angle){
+  // 0.2 + range between 0.2 and 1.0 evenly spread over increments 6 through n
+  console.log("Increments: " + increments +
+              ", increment: " + increment +
+              ", angle: " + angle +
+              ", ratio: " + increment / increments);
+  return Math.min(0.2, increment / increments) * angle;
+}
+
+function radianIncrement(n){
+  return Math.PI / 2 / n;
+}
+
+function sinWaveAngleWeight(radianIncrement, distanceFromCenter, angle){
+  return Math.sin(radianIncrement * distanceFromCenter) * angle;
 }
 
 function clear(ctx, c){
