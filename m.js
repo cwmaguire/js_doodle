@@ -3,10 +3,10 @@ var c;
 var h;
 var w;
 var mid;
-var MAX = 40;
-var dist = 5;
+var MAX = 80;
+var dist = 2;
 
-out("t1", "500");
+out("t1", "50");
 init();
 
 function init(){
@@ -45,34 +45,74 @@ function animate_(ctx, objs){
 }
 
 function updateObjects(objs){
+  var angle = Math.PI / 64;
+  var strategies = [-angle, 0, angle];
   var newestObjs;
   var last;
+  var strategy;
+  var deltaAngle = 0;
+
+  out("t7", strategies);
+
   if(objs.length < MAX){
-    out("t7", "objs.length < MAX: " + objs.length);
+    //out("t7", "objs.length < MAX: " + objs.length);
     newestObjs = objs.slice(0);
   }else{
-    out("t7", "objs.length !< MAX: " + objs.length);
+    //out("t7", "objs.length !< MAX: " + objs.length);
     newestObjs = objs.slice(1);
   }
+
   if(objs.length == 0){
-    last = {x: 0, y: 0, a: 0};
+    last = {id: 0, x: 0, y: 0, a: 0, a: 0, strategy: 0, da: 0};
   }else{
     last = newestObjs[newestObjs.length - 1];
   }
 
-  //var randAngle = Math.random() * Math.PI / 15 - (Math.PI / 30);
-  //var randAngle = Math.random() * Math.PI / 8 - (Math.PI / 16);
-  // Maybe base this angle off the last angle
-  var randAngle = last.a + (Math.random() * Math.PI / 16 - (Math.PI / 32));
-  out("t5", "randAngle: " + randAngle);
-  out("t6", "last: " + last);
-  //var dx = Math.floor(dist * Math.sin(randAngle));
-  //var dy = Math.floor(dist * Math.cos(randAngle));
+  // PI / 1 = 180
+  // PI / 2 = 90
+  // PI / 4 = 45
+  // PI / 8 = 22.5
+  // PI / 16 = 11.25
+  // PI / 32 = 5.625
+  // PI / 64 = 2.8125
+
+  var index;
+  if(last.id % 10 == 0){
+    strategy = randOther(last.strategy, strategies.length);
+    out("t12", "new strategy: " + strategy);
+    deltaAngle = strategies[strategy];
+    out("t11", "new deltaAngle: " + deltaAngle);
+  }else{
+    deltaAngle = last.da;
+    strategy = last.strategy;
+    out("t11", "deltaAngle: " + deltaAngle);
+    out("t12", "strategy: " + strategy);
+  }
+
+  newAngle = Math.max(Math.min(last.a + deltaAngle, Math.PI/16), -Math.PI/16);
+
+  //var newAngle = angle;
+  //out("t5", "randAngle: " + angle);
+  out("t5", "newAngle: " + newAngle);
+  out("t6", "last: " + last.id +
+            ", " + last.x +
+            ", " + last.y +
+            ", " + last.a +
+            ", " + last.da);
   var dx = dist;
   var dy = dist;
-  out("t4", "Adding: " + dx + "," + dy);
-  newestObjs.push({x: dx, y: dy, a: randAngle});
+  out("t4", "Adding: " + dx + "," + dy + ", " + newAngle);
+  newestObjs.push({id: last.id + 1,
+                   x: dx, y: dy,
+                   a: newAngle,
+                   strategy: strategy,
+                   da: deltaAngle});
   return newestObjs.slice(0);
+}
+
+function randOther(Curr, Max){
+  return (Curr + Math.floor(Math.random() * Max)) % Max;
+  //return (Curr + Math.floor((Math.random() * Max))) % (Max + 1)
 }
 
 /*
@@ -84,7 +124,7 @@ function updateObjects(objs){
 
 function render(ctx, c, objs){
   var x = clear(ctx, c);
-  //ctx.rotate(Math.PI / 64);
+  ctx.rotate(Math.PI / 32);
   //ctx.strokeStyle = "#00F";
   //ctx.beginPath();
   //ctx.moveTo(0, 0);
@@ -115,6 +155,7 @@ function render(ctx, c, objs){
     //out("t9", "Increment: " + i);
     out("t10", "Increments: " + objs.length);
     totalA += incrementalWeight(objs.length, i + 1, obj.a);
+    totalA = Math.max(Math.min(totalA, Math.PI * 0.75), -Math.PI * 0.75);
     //totalA += obj.a;
     out("t8", "totalA: " + totalA);
     //dx = Math.floor(obj.x * Math.sin(obj.a));
@@ -133,11 +174,11 @@ function render(ctx, c, objs){
 
 function incrementalWeight(increments, increment, angle){
   // 0.2 + range between 0.2 and 1.0 evenly spread over increments 6 through n
-  console.log("Increments: " + increments +
-              ", increment: " + increment +
-              ", angle: " + angle +
-              ", ratio: " + increment / increments);
-  return Math.min(0.2, increment / increments) * angle;
+  //console.log("Increments: " + increments +
+              //", increment: " + increment +
+              //", angle: " + angle +
+              //", ratio: " + increment / increments);
+  return Math.min(0.4, increment / increments) * angle;
 }
 
 function radianIncrement(n){
