@@ -22,7 +22,7 @@ function animate_(state){
   state.frame = Math.floor(ellapsedMillis / millisPerFrame);
   state.ellapsedFrames = state.frame - state.lastFrame;
 
-  if(state.ellapsedFrames == 0){
+  if(state.ellapsedFrames == 0 || state.frame % 2 == 0 || state.frame % 3 == 0){
     out("t6", "skipping at " + state.frame);
     requestAnimationFrame(animationFrameCallback(state));
     return 0;
@@ -42,11 +42,25 @@ function animate_(state){
 function render(state){
   var canvas = document.getElementById("canvas1");
   var ctx = canvas.getContext("2d");
-  clear(ctx, canvas.width, canvas.height);
-  ctx.fillRect(state.frame, state.frame, 10, 10);
+  var h = canvas.height;
+  var w = canvas.width;
+  clear(ctx, w, h);
+  ctx.fillStyle = rgb(state.frame);
+  ctx.fillRect(state.frame % w, state.frame % h, (state.frame % 50) + 10, (state.frame % 50) + 10);
   return clone(state);
 }
 
 function clear(ctx, h, w){
   ctx.clearRect(0, 0, h, w);
+}
+
+function rgb(i){
+  var r = mod255(mod255(i) * 2);
+  var g = 255 - mod255(i * 4);
+  var b = 255 - mod255(i * 4);
+  return ("#" + toHex(r) + toHex(g) + toHex(b)).toUpperCase();
+}
+
+function mod255(i){
+  return i % 255;
 }
