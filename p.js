@@ -3,8 +3,6 @@
 function animate(){
   out("t2", "true");
   var canvas = document.getElementById("canvas1");
-  //canvas.height = 400;
-  //canvas.width = 500;
   animate_({lastFrame: 0,
             ellapsed: 0,
             ellapsedMillis: 0,
@@ -38,7 +36,6 @@ function animate_(state){
     out("t5", "lastFrame: " + state.lastFrame);
   }
 
-  var newState = render(state);
   requestAnimationFrame(animationFrameCallback(render(state)));
 }
 
