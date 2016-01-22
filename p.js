@@ -49,36 +49,28 @@ function render(state){
   var w = canvas.width;
   clear(ctx, w, h);
   ctx.fillStyle = rgb(state.frame);
-  //ctx.fillRect(state.frame % w, state.frame % h, (state.frame % 50) + 10, (state.frame % 50) + 10);
-  //rotatedSquare(ctx, Math.PI / 8, state.frame % w, state.frame % h, 40, 40);
   ctx.strokeStyle = "#F00";
   var i = 0;
-  for(i = 20; i <= 200; i += 10){
-    rotatedSquares(ctx, state.frame - i, Math.floor(i / 10), 20, i, i / 100, w, h, i);
-    //rotatedSquares(ctx, state.frame, i, 5, Math.floor(i / 5), w, h, i);
+  for(i = 100; i <= 100; i += 10){
+    rotatedSquares(ctx,                       // The context of the canvas to paint with
+                   state.frame - i,           // What frame we want to base the square off of
+                   Math.floor(i / 10),        // Rate of increment for square color and angle
+                   30,                        // How close to the right edge of the canvas the square can get
+                   30,                        // How close to the bottom edge of the canvase the square can get
+                   Math.floor((i - 100) / 5), // How many pixels per frame to move
+                   w,                         // width of the canvas
+                   h,                         // height of the canvas
+                   i);                        // size of the square
   }
-  //for(i = 0; i < 100; i += 10){
-    //ctx.strokeStyle = rgb(i);
-    //rotatedSquare(ctx,
-                  //(state.frame / 1000 * i) % Math.PI,
-                  //Math.abs(state.frame - 100) * 3 % (w - 40),
-                  //Math.abs(state.frame - 100) * 3 % (h - 40),
-                  //50,
-                  //50);
-  //}
-  //for(i = 0; i < 100; i += 10){
-    //ctx.strokeStyle = rgb(i);
-    //rotatedSquare(ctx, (state.frame / 1000 * i) % Math.PI, state.frame * 3 % (w - 40), state.frame * 3 % (h - 40), 120, 120);
-  //}
   return clone(state);
 }
 
 function rotatedSquares(ctx, frame, inc, xoff, yoff, mult, maxW, maxH, size){
   var i = 0
-  for(i = 0; i < inc * 10; i += inc){
-    ctx.strokeStyle = rgb(Math.floor(i / 10));
+  for(i = 0; i < inc * 2; i += inc){
+    ctx.strokeStyle = rgb(Math.floor(i * 5));
     rotatedSquare(ctx,
-                  (frame / 1000 * i) % Math.PI,
+                  Math.abs((frame / 1000 * i) % (Math.PI * 2) - Math.PI),
                   Math.abs(frame - xoff) * mult % (maxW - 40),
                   Math.abs(frame - yoff) * mult % (maxH - 40),
                   size,
