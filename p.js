@@ -2,6 +2,9 @@
 
 function animate(){
   out("t2", "true");
+  var canvas = document.getElementById("canvas1");
+  //canvas.height = 400;
+  //canvas.width = 500;
   animate_({lastFrame: 0,
             ellapsed: 0,
             ellapsedMillis: 0,
@@ -48,7 +51,11 @@ function render(state){
   ctx.fillStyle = rgb(state.frame);
   //ctx.fillRect(state.frame % w, state.frame % h, (state.frame % 50) + 10, (state.frame % 50) + 10);
   //rotatedSquare(ctx, Math.PI / 8, state.frame % w, state.frame % h, 40, 40);
-  rotatedSquare(ctx, Math.random() * Math.PI / 2, state.frame % w, state.frame % h, 80, 80);
+  var i = 0;
+  for(i = 0; i < 100; i += 10){
+    rotatedSquare(ctx, (state.frame / 1000 * i) % Math.PI, state.frame * 3 % (w - 40), state.frame * 3 % (h - 40), 120, 120);
+    //rotatedSquare(ctx, (state.frame / i) % Math.PI / 2, state.frame % w, state.frame % h, 80, 80);
+  }
   return clone(state);
 }
 
