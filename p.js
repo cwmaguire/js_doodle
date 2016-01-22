@@ -22,7 +22,7 @@ function animate_(state){
   state.frame = Math.floor(ellapsedMillis / millisPerFrame);
   state.ellapsedFrames = state.frame - state.lastFrame;
 
-  if(state.ellapsedFrames == 0 || state.frame % 2 == 0 || state.frame % 3 == 0){
+  if(state.ellapsedFrames == 0){
     out("t6", "skipping at " + state.frame);
     requestAnimationFrame(animationFrameCallback(state));
     return 0;
@@ -46,8 +46,28 @@ function render(state){
   var w = canvas.width;
   clear(ctx, w, h);
   ctx.fillStyle = rgb(state.frame);
-  ctx.fillRect(state.frame % w, state.frame % h, (state.frame % 50) + 10, (state.frame % 50) + 10);
+  //ctx.fillRect(state.frame % w, state.frame % h, (state.frame % 50) + 10, (state.frame % 50) + 10);
+  //rotatedSquare(ctx, Math.PI / 8, state.frame % w, state.frame % h, 40, 40);
+  rotatedSquare(ctx, Math.random() * Math.PI / 2, state.frame % w, state.frame % h, 80, 80);
   return clone(state);
+}
+
+function rotatedSquare(ctx, r, left, top, w, h){
+  var hyp = Math.sqrt(Math.pow(w/2, 2), Math.pow(h/2, 2));
+  var angle = Math.PI - Math.PI / 4 - r;
+  var x = Math.cos(angle) * hyp;
+  var y = Math.sin(angle) * hyp;
+  if(r < Math.PI / 4){
+    x = -x;
+  }
+  ctx.beginPath();
+  ctx.strokeStyle = "#F00";
+  ctx.moveTo(left + w / 2 + x, top + h / 2 - y);
+  ctx.lineTo(left + w / 2 + y, top + h / 2 + x);
+  ctx.lineTo(left + w / 2 - x, top + h / 2 + y);
+  ctx.lineTo(left + w / 2 - y, top + h / 2 - x);
+  ctx.closePath();
+  ctx.stroke();
 }
 
 function clear(ctx, h, w){
