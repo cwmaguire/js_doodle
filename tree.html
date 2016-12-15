@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lists.js"></script>
+    <script src="test.js"></script>
+    <script src="util.js"></script>
+</head>
+<body>
+<canvas id="canvas1"></canvas>
+
+<script language="JavaScript">
+function start(){
+  var c = document.getElementById("canvas1");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "#F0F0F0";
+  ctx.strokeStyle = "#FF0000";
+
+  map(function(i){draw(c, ctx, i); }, seq(1, 4));
+
+  ctx.strokeRect(0, 0, c.width, c.height);
+
+  //ctx.beginPath(),
+  //ctx.moveTo((c.width / 2), y1),
+  //ctx.lineTo((c.width / 2), y2),
+  //ctx.stroke();
+
+  //console.log("Drawing");
+  //console.log("Canvas width: " + c.width);
+  console.log("Canvas height: " + c.height);
+}
+
+// for every point, angle and count, create N more points at angles N0..N1 where N is > 1
+
+function points(args, acc){
+  x1 = args.x;
+  y1 = args.y;
+  angle = args.angle;
+  arc = args.arc;
+  count = acc.count;
+  lines = num_lines();
+
+  angles = arc_angles(lines, arc);
+
+}
+
+function num_lines(){
+    return 3;
+}
+
+function arc_angles(num, arc){
+  if(num < 3){
+    return [];
+  }else{
+    return map(function(i){ return i * arc/(num - 1)}, seq(0, num - 1));
+  }
+}
+
+start();
+</script>
+</body>
+</html>
