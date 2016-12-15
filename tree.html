@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lists.js"></script>
+    <script src="test.js"></script>
+    <script src="util.js"></script>
+</head>
+<body>
+<canvas id="canvas1"></canvas>
+
+<script language="JavaScript">
+function start(){
+  var c = document.getElementById("canvas1");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "#F0F0F0";
+  ctx.strokeStyle = "#FF0000";
+
+  map(function(i){draw(c, ctx, i); }, seq(1, 4));
+
+  ctx.strokeRect(0, 0, c.width, c.height);
+
+  //console.log("Drawing");
+  //console.log("Canvas width: " + c.width);
+  console.log("Canvas height: " + c.height);
+}
+
+function draw(c, ctx, i){
+  console.log("draw(c, ctx, " + i + ")");
+  y1 = height(i, c.height / 2);
+  y2 = height(i + 1, c.height / 2);
+  console.log("y1: " + y1 + "; y2: " + y2);
+
+  color = toHex(i * 50);
+
+  //ctx.strokeStyle = "#FF0000";
+  ctx.strokeStyle = "#" + toHex(i * 20) + toHex(255 - (i * 30)) + color;
+  console.log("Color is " + color + " - " + ctx.strokeStyle);
+
+  ctx.beginPath(),
+  ctx.moveTo((c.width / 2), y1),
+  ctx.lineTo((c.width / 2), y2),
+  ctx.stroke();
+}
+
+function height(i, h){
+  //console.log("height(" + i + ", " + h + ");");
+  return sum(fractions(i - 1, h));
+}
+
+function sum(xs){
+  return foldl(add, xs, 0);
+}
+
+function add(x, y){
+  //console.log("Adding " + x + " and " + y);
+  return x + y;
+}
+
+function fractions(i, h){
+  //console.log("fractions(" + i + ", " + h + ");");
+  fs = map(function(x){return h / x}, seq(1, i));
+  //map(function(f){console.log("fraction: " + f);}, fs);
+  return fs;
+}
+
+start();
+</script>
+</body>
+</html>
