@@ -19,48 +19,40 @@ function start(){
 
   ctx.strokeRect(0, 0, c.width, c.height);
 
+  //ctx.beginPath(),
+  //ctx.moveTo((c.width / 2), y1),
+  //ctx.lineTo((c.width / 2), y2),
+  //ctx.stroke();
+
   //console.log("Drawing");
   //console.log("Canvas width: " + c.width);
   console.log("Canvas height: " + c.height);
 }
 
-function draw(c, ctx, i){
-  console.log("draw(c, ctx, " + i + ")");
-  y1 = height(i, c.height / 2);
-  y2 = height(i + 1, c.height / 2);
-  console.log("y1: " + y1 + "; y2: " + y2);
+// for every point, angle and count, create N more points at angles N0..N1 where N is > 1
 
-  color = toHex(i * 50);
+function points(args, acc){
+  x1 = args.x;
+  y1 = args.y;
+  angle = args.angle;
+  arc = args.arc;
+  count = acc.count;
+  lines = num_lines();
 
-  //ctx.strokeStyle = "#FF0000";
-  ctx.strokeStyle = "#" + toHex(i * 20) + toHex(255 - (i * 30)) + color;
-  console.log("Color is " + color + " - " + ctx.strokeStyle);
+  angles = arc_angles(lines, arc);
 
-  ctx.beginPath(),
-  ctx.moveTo((c.width / 2), y1),
-  ctx.lineTo((c.width / 2), y2),
-  ctx.stroke();
 }
 
-function height(i, h){
-  //console.log("height(" + i + ", " + h + ");");
-  return sum(fractions(i - 1, h));
+function num_lines(){
+    return 3;
 }
 
-function sum(xs){
-  return foldl(add, xs, 0);
-}
-
-function add(x, y){
-  //console.log("Adding " + x + " and " + y);
-  return x + y;
-}
-
-function fractions(i, h){
-  //console.log("fractions(" + i + ", " + h + ");");
-  fs = map(function(x){return h / x}, seq(1, i));
-  //map(function(f){console.log("fraction: " + f);}, fs);
-  return fs;
+function arc_angles(num, arc){
+  if(num < 3){
+    return [];
+  }else{
+    return map(function(i){ return i * arc/(num - 1)}, seq(0, num - 1));
+  }
 }
 
 start();
