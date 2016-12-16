@@ -27,20 +27,21 @@ function start(){
   //console.log("Drawing");
   //console.log("Canvas width: " + c.width);
   console.log("Canvas height: " + c.height);
+
+  lengths = map(function(i){ return c.height / 2 * i; }, seq(1,4);
+
+  first_line = {x1: c.width / 2, y1: 0, x2: c.width / 2, y2: hd(lengths)};
+
+  lines(tl(lengths), Math.PI / 5, [first_line]);
 }
 
 // for every point, angle and count, create N more points at angles N0..N1 where N is > 1
 
-function points(args, acc){
-  x1 = args.x;
-  y1 = args.y;
-  angle = args.angle;
-  arc = args.arc;
-  count = acc.count;
-  lines = num_lines();
+function lines(
 
-  angles = arc_angles(lines, arc);
-
+function lines(lengths, arc, lines){
+  angles = arc_angles(hd(lines).length, arc);
+  return set(acc, "lines", concat(acc.lines, map(line(args), angles)));
 }
 
 function num_lines(){
@@ -53,6 +54,23 @@ function arc_angles(num, arc){
   }else{
     return map(function(i){ return i * arc/(num - 1)}, seq(0, num - 1));
   }
+}
+
+function line(count){
+  args = acc.args;
+  lines = acc.lines;
+  x1 = args.x;
+  y1 = args.y;
+  angle = args.angle;
+  arc = args.arc;
+  count = acc.count;
+  length = acc.length;
+}
+
+function set(obj, field, value){
+  copy = clone(obj);
+  copy[field] = value;
+  return copy;
 }
 
 start();
