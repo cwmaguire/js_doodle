@@ -23,7 +23,7 @@ function start(){
                         y2: c.height - c.height / 5,
                         a: 0};
 
-  var lines_ = lines(tl(lengths), round(Math.PI * 1.2), [perpendicular_line], []);
+  var lines_ = lines(tl(lengths), round(Math.PI * 0.6), [perpendicular_line], []);
   map(function(line){ draw_line(ctx, line) }, lines_);
 }
 
@@ -40,16 +40,10 @@ function length(canvas, i){
 // for every point, angle and count, create N more points at angles N0..N1 where N is > 1
 
 function lines(lengths, arc, parent_lines, ancestor_lines){
-  //console.log("lengths: " + lengths);
-  //console.log("arc: " + arc);
-  //console.log("parent_lines: " + parent_lines);
-  //console.log("ancestor_lines: " + ancestor_lines);
   if(lengths.length == 0){
     return ancestor_lines;
   }
-  var angles = arc_angles(5, arc);
-  console.log("");
-  console.log("angles: " + angles);
+  var angles = arc_angles(7, arc);
   var restLengths = tl(lengths);
   var restLines = concat(parent_lines, ancestor_lines);
   var line_angles = cross_product(parent_lines, angles);
@@ -81,19 +75,15 @@ function line_fun(length){
 
 /* The theory here is that depending on which direction
  * we're going we'll either need to add or subtract the
- * x and y deltas. The x and y deltas are calculated base
+ * x and y deltas. The x and y deltas are calculated based
  * on the specified angle and the length of line specified.
  * i.e. start at X,Y and go length L at angle A.
  */
 function line(parent_line, length, angle){
-  //console.log("line with angle: " + angle);
   var x1 = parent_line.x2;
   var y1 = parent_line.y2;
   var parent_angle = parent_line.a;
-  //var total_angle = parent_angle + angle;
-  //var total_angle = parent_angle + angle - (Math.PI / 2);
   var total_angle = child_angle(parent_angle, angle);
-  //var total_angle = angle;
   var normalized_angle = normalize_angle(total_angle);
   var xd_translate = x_translation(total_angle);
   var yd_translate = y_translation(total_angle);
@@ -101,29 +91,12 @@ function line(parent_line, length, angle){
   var cos = round(Math.cos(normalized_angle));
   var xd = round(Math.sin(normalized_angle) * length * xd_translate);
   var yd = round(Math.cos(normalized_angle) * length * yd_translate);
-  //console.log("xd: " + xd + "; yd: " + yd);
   var x2 = round(x1 + xd);
   var y2 = round(y1 + yd);
-  //console.log("Line: x1: " + x1 + "; x2: " + x2 + "; y1: " + y1 + "; y2: " + y2 + "; " +
-  //            "a: " + angle);
-  console.log("pa: " + parent_angle + "; " +
-              "a: " + angle + "; " +
-              "ta: " + total_angle + "; " +
-              "na: " + normalized_angle + "; " +
-              "xdt: " + xd_translate + "; " +
-              "ydt: " + yd_translate + "; " +
-              "sin: " + sin + "; " +
-              "cos: " + cos + "; " +
-              "l: [" + x1 + "," + y1 + ";" + x2 + "," + y2 + "]");
   return {x1: x1, y1: y1, x2: x2, y2: y2, a: total_angle};
 }
 
 function child_angle(parent_angle, angle){
-  //if(parent_angle + angle > Math.PI / 2){
-  //  return round(parent_angle + angle - (Math.PI / 2));
-  //}else{
-  //  return round(parent_angle + angle + (Math.PI / 2));
-  //}
   return round((angle + parent_angle + Math.PI) % (Math.PI * 2));
 }
 
