@@ -13,28 +13,17 @@ function start(){
   var ctx = c.getContext("2d");
   ctx.fillStyle = "#F0F0F0";
   ctx.strokeStyle = "#FF0000";
-
-  //map(function(i){draw(c, ctx, i); }, seq(1, 4));
-
   ctx.strokeRect(0, 0, c.width, c.height);
-
-  //ctx.beginPath(),
-  //ctx.moveTo((c.width / 2), y1),
-  //ctx.lineTo((c.width / 2), y2),
-  //ctx.stroke();
-
-  //console.log("Drawing");
-  //console.log("Canvas width: " + c.width);
 
   lengths = map(length_fun(c), seq(1,5));
 
   perpendicular_line = {x1: c.width / 2,
                         y1: c.height,
                         x2: c.width / 2,
-                        y2: c.height - hd(lengths),
-                        a: Math.PI};
+                        y2: c.height - c.height / 5,
+                        a: 0};
 
-  var lines_ = lines(tl(lengths), Math.PI * .9, [perpendicular_line], []);
+  var lines_ = lines(tl(lengths), round(Math.PI * 1.2), [perpendicular_line], []);
   map(function(line){ draw_line(ctx, line) }, lines_);
 }
 
@@ -45,7 +34,7 @@ function length_fun(canvas){
 }
 
 function length(canvas, i){
-  return canvas.height / (i * 3);
+  return (canvas.height / (i * i)) - 15;
 }
 
 // for every point, angle and count, create N more points at angles N0..N1 where N is > 1
@@ -58,8 +47,9 @@ function lines(lengths, arc, parent_lines, ancestor_lines){
   if(lengths.length == 0){
     return ancestor_lines;
   }
-  var angles = arc_angles(4, arc);
-  //console.log("angles: " + angles);
+  var angles = arc_angles(5, arc);
+  console.log("");
+  console.log("angles: " + angles);
   var restLengths = tl(lengths);
   var restLines = concat(parent_lines, ancestor_lines);
   var line_angles = cross_product(parent_lines, angles);
@@ -74,8 +64,11 @@ function num_lines(){
 function arc_angles(num, arc){
   var leftOver = Math.PI * 2 - arc;
   var padding = leftOver / 2;
-  //console.log("Creating " + num + " angles in arc " + arc + " with padding " + padding);
-  return map(function(i){ return (i * arc/(num - 1)) + padding}, seq(0, num - 1));
+  return map(function(i){ return round((i * arc/(num - 1)) + padding)}, seq(0, num - 1));
+}
+
+function round(x){
+  return Math.round(x * 1000) / 1000;
 }
 
 function line_fun(length){
@@ -98,41 +91,52 @@ function line(parent_line, length, angle){
   var y1 = parent_line.y2;
   var parent_angle = parent_line.a;
   //var total_angle = parent_angle + angle;
-  var total_angle = parent_angle + angle - (Math.PI);
+  //var total_angle = parent_angle + angle - (Math.PI / 2);
+  var total_angle = child_angle(parent_angle, angle);
   //var total_angle = angle;
   var normalized_angle = normalize_angle(total_angle);
   var xd_translate = x_translation(total_angle);
   var yd_translate = y_translation(total_angle);
-  var sin = Math.sin(normalized_angle);
-  var cos = Math.cos(normalized_angle);
-  //console.log("parent angle: " + parent_angle + "; " +
-  //            "angle: " + angle + "; " +
-  //            "total_angle: " + total_angle + "; " +
-  //            "normalized_angle: " + normalized_angle + "; " +
-  //            "xd_translate: " + xd_translate + "; " +
-  //            "yd_translate: " + yd_translate + "; " +
-  //            "sin: " + sin + "; " +
-  //            "cos: " + cos + "; ");
-  var xd = Math.sin(normalized_angle) * length * xd_translate;
-  var yd = Math.cos(normalized_angle) * length * yd_translate;
+  var sin = round(Math.sin(normalized_angle));
+  var cos = round(Math.cos(normalized_angle));
+  var xd = round(Math.sin(normalized_angle) * length * xd_translate);
+  var yd = round(Math.cos(normalized_angle) * length * yd_translate);
   //console.log("xd: " + xd + "; yd: " + yd);
-  var x2 = x1 + xd;
-  var y2 = y1 + yd;
+  var x2 = round(x1 + xd);
+  var y2 = round(y1 + yd);
   //console.log("Line: x1: " + x1 + "; x2: " + x2 + "; y1: " + y1 + "; y2: " + y2 + "; " +
   //            "a: " + angle);
-  return {x1: x1, y1: y1, x2: x2, y2: y2, a: angle};
+  console.log("pa: " + parent_angle + "; " +
+              "a: " + angle + "; " +
+              "ta: " + total_angle + "; " +
+              "na: " + normalized_angle + "; " +
+              "xdt: " + xd_translate + "; " +
+              "ydt: " + yd_translate + "; " +
+              "sin: " + sin + "; " +
+              "cos: " + cos + "; " +
+              "l: [" + x1 + "," + y1 + ";" + x2 + "," + y2 + "]");
+  return {x1: x1, y1: y1, x2: x2, y2: y2, a: total_angle};
+}
+
+function child_angle(parent_angle, angle){
+  //if(parent_angle + angle > Math.PI / 2){
+  //  return round(parent_angle + angle - (Math.PI / 2));
+  //}else{
+  //  return round(parent_angle + angle + (Math.PI / 2));
+  //}
+  return round((angle + parent_angle + Math.PI) % (Math.PI * 2));
 }
 
 function normalize_angle(angle){
   var clamped = angle % (Math.PI / 2);
   if(angle >= 0 && angle < Math.PI / 2){
-    return clamped;
+    return round(clamped);
   }else if(angle >= Math.PI / 2 && angle < Math.PI){
-    return Math.PI / 2 - clamped;
+    return round(Math.PI / 2 - clamped);
   }else if(angle >= Math.PI && angle < Math.PI * 1.5){
-    return clamped;
+    return round(clamped);
   }else{
-    return Math.PI / 2 - clamped;
+    return round(Math.PI / 2 - clamped);
   }
 }
 
@@ -147,10 +151,10 @@ function x_translation(angle){
 
 function y_translation(angle){
   //if(angle >= 0 && (angle <= Math.PI)){
-  if(angle >= (3 / 2 * Math.PI) || angle <= Math.PI / 2){
-    return 1;
-  }else{
+  if(angle >= (3 / 2 * Math.PI) || angle < Math.PI / 2){
     return -1;
+  }else{
+    return 1;
   }
 }
 
