@@ -35,12 +35,9 @@ function clone(state){
   return newState;
 }
 
-function round(x){
-  return Math.round(x * 1000) / 1000;
-}
-
 function round(x, places){
-  return Math.round(x * 10 * places) / 10 * places;
+  places = places | 3;
+  return Math.round(x * Math.pow(10, places)) / Math.pow(10, places);
 }
 
 function rgb(i){
