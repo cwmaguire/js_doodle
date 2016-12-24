@@ -34,3 +34,18 @@ function clone(state){
   }
   return newState;
 }
+
+function round(x){
+  return Math.round(x * 1000) / 1000;
+}
+
+function round(x, places){
+  return Math.round(x * 10 * places) / 10 * places;
+}
+
+function rgb(i){
+  var r = mod255(mod255(i) * 2);
+  var g = 255 - mod255(i * 4);
+  var b = 255 - mod255(i * 4);
+  return ("#" + toHex(r) + toHex(g) + toHex(b)).toUpperCase();
+}
