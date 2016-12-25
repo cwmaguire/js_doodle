@@ -1,7 +1,7 @@
 "use strict";
 
 function state(){
-  return {};
+  return {points: []};
 }
 
 function render(state){
@@ -9,8 +9,16 @@ function render(state){
   var angle = round(frame / 100 % (Math.PI * 2));
   var height = state.canvas.height;
   var width = state.canvas.width;
+  var points = state.user.points;
+  console.log("User: " + state.user.points.length);
+  console.log("Old points: " + points.length);
+  var point = Math.sin(angle % Math.PI) * 100;
+  var newPoints = cons(points, point);
+  console.log("New points: " + newPoints);
+  state.user.points = newPoints;
   out("t1", "Angle: " + angle);
   draw_line(state.context, line(angle, width / 2, height / 2));
+  draw_points(cons(points.slice(0, 200), newPoints));
   return clone(state);
 }
 
@@ -53,4 +61,14 @@ function draw_line(ctx, line){
   ctx.moveTo(line.x1, line.y1),
   ctx.lineTo(line.x2, line.y2),
   ctx.stroke();
+}
+
+function draw_points(ctx, points){
+  map(function(p){ draw_point(ctx, p) }, zip(seq(0, points.length), reverse(points)));
+}
+
+function draw_point(ctx, point){
+  ctx.beginPath();
+  ctx.arc(200 - point[0], point[1], 5, 0, 2 * Math.PI);
+  ctx.fill();
 }

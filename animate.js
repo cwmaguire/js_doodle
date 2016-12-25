@@ -10,6 +10,7 @@ function animate(){
             canvas: canvas,
             context: canvas.getContext("2d"),
             user: state()});
+  console.log("Setting user to " + (state()).points.length)
 }
 
 function animationFrameCallback(state){
