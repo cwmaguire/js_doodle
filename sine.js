@@ -1,25 +1,27 @@
 "use strict";
 
 function state(){
-  return {points: []};
+  return {sines: [], cosines: []};
 }
 
 function render(state){
+  var ctx = state.context;
   var frame = state.animation.frame;
   var angle = round(frame / 100 % (Math.PI * 2));
   var height = state.canvas.height;
   var width = state.canvas.width;
-  var points = state.user.points;
-  console.log("User: " + state.user.points.length);
-  console.log("Old points: " + points.length);
-  var point = Math.sin(angle % Math.PI) * 100;
-  var newPoints = cons(points, point);
-  console.log("New points: " + newPoints);
-  state.user.points = newPoints;
+  var sine = Math.sin(angle) * 50 + (height / 2 + 50);
+  var sines = cons(state.user.sines.slice(0, width / 2), sine);
+  var cosine = Math.cos(angle) * 50 + (height / 2 - 50);
+  var cosines = cons(state.user.cosines.slice(0, width / 2), cosine);
+
   out("t1", "Angle: " + angle);
-  draw_line(state.context, line(angle, width / 2, height / 2));
-  draw_points(cons(points.slice(0, 200), newPoints));
-  return clone(state);
+  draw_line(ctx, line(angle, width / 2, height / 2));
+  draw_points(ctx, "#0F0", sines);
+  draw_points(ctx, "#00F", cosines);
+  state.user.sines = sines;
+  state.user.cosines = cosines;
+  return state;
 }
 
 function line(angle, x1, y1){
@@ -63,12 +65,15 @@ function draw_line(ctx, line){
   ctx.stroke();
 }
 
-function draw_points(ctx, points){
-  map(function(p){ draw_point(ctx, p) }, zip(seq(0, points.length), reverse(points)));
+function draw_points(ctx, color, points){
+  map(function(p){ draw_point(ctx, color, p) },
+      zip(seq(0, points.length),
+          reverse(points)));
 }
 
-function draw_point(ctx, point){
+function draw_point(ctx, color, point){
   ctx.beginPath();
-  ctx.arc(200 - point[0], point[1], 5, 0, 2 * Math.PI);
+  ctx.strokeStyle = color;
+  ctx.arc(0 + point[0], 50 + point[1], 1, 0, 2 * Math.PI);
   ctx.fill();
 }

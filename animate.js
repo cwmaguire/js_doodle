@@ -3,14 +3,14 @@
 function animate(){
   out("t2", "true");
   var canvas = document.getElementById("canvas1");
+  var impl_state = state();
   animate_({animation: {lastFrame: 0,
                         ellapsed: 0,
                         ellapsedMillis: 0,
-                        framesPerSecond: 30},
+                        framesPerSecond: 40},
             canvas: canvas,
             context: canvas.getContext("2d"),
-            user: state()});
-  console.log("Setting user to " + (state()).points.length)
+            user: impl_state});
 }
 
 function animationFrameCallback(state){
@@ -35,7 +35,7 @@ function animate_(state){
   }
   anim.lastFrame = anim.frame;
 
-  if(anim.frame > 1000){
+  if(anim.frame > 2000){
     return 0;
   }
 
