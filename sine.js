@@ -16,42 +16,38 @@ function render(state){
 
 function line(angle, x1, y1){
   var y1, y2;
-  var normalized_angle = normalize_angle(angle);
-  //console.log("norm'd: " + normalized_angle);
-  out("t10", "Angle: " + angle);
-  out("t11", "translations: " + x_translation(angle) + ", " + y_translation(angle));
-  var x2 = round(Math.cos(normalized_angle) * 50) * x_translation(angle);
-  var y2 = round(Math.sin(normalized_angle) * 50) * y_translation(angle);
-  out("t8", "norm: " + normalized_angle + ", x2: " + x2 + ", y2: " + y2);
+  var length = 50;
+  out("t10", "Angle: " + angle + ", clamped: " + angle % (Math.PI / 2));
+  var funs = trig_funs(angle);
+  var x2 = round((funs.x)(angle % (Math.PI / 2)) * length);
+  var y2 = round((funs.y)(angle % (Math.PI / 2)) * length);
+  out("t4", "x: " + x2 + ", y: " + y2);
+  out("t5", ": " + x2 + ", y: " + y2);
   return {x1: x1, y1: y1, x2: x1 + x2, y2: y1 + y2};
 }
 
-function normalize_angle(angle){
-  var clamped = round(angle % (Math.PI / 2));
-  out("t9", "angle: " + angle + ", clamped: " + clamped);
-  //console.log("Calculating norm.");
-  //console.log("Clamped: " + clamped);
+function trig_funs(angle){
+  var cos = Math.cos;
+  var sin = Math.sin;
   if(angle >= 0 && angle < Math.PI / 2){
-    return round(Math.PI / 2 - clamped);
+    return {x: trig_fun(cos, 1), y: trig_fun(sin, -1)};
   }else if(angle >= Math.PI / 2 && angle < Math.PI){
-    return round(clamped);
+    return {x: trig_fun(sin, -1), y: trig_fun(cos, -1)};
   }else if(angle >= Math.PI && angle < Math.PI * 1.5){
-    return round(clamped);
+    return {x: trig_fun(cos, -1), y: trig_fun(sin, 1)};
   }else{
-    return round(Math.PI / 2 - clamped);
+    return {x: trig_fun(sin, 1), y: trig_fun(cos, 1)};
   }
 }
 
-function x_translation(angle){
-  return (angle >= Math.PI / 2 && angle < Math.PI * 3 / 2) ? -1 : 1;
-}
-
-function y_translation(angle){
-  return (angle >= 0 && angle < Math.PI) ? -1 : 1;
+function trig_fun(fun, translation){
+  return function(angle){
+    return fun(angle) * translation;
+  }
 }
 
 function draw_line(ctx, line){
-  out("t7", "line: " + line.x1 + ", " + line.y1 + ", " + line.x2 + ", " + line.y2);
+  out("t7", "line: " + line.x1 + ", " + line.y1 + ", " + round(line.x2) + ", " + round(line.y2));
   ctx.strokeStyle = "#00F";
   ctx.beginPath(),
   ctx.moveTo(line.x1, line.y1),
