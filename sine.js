@@ -1,7 +1,7 @@
 "use strict";
 
 function state(){
-  return {sines: [], cosines: []};
+  return {circles: [], sines: [], cosines: []};
 }
 
 function render(state){
@@ -13,16 +13,18 @@ function render(state){
 
   var sine = Math.sin(angle - Math.PI) * 50 + (height / 2);
   var sines = cons(state.user.sines.slice(0, width / 2 - 51), sine);
-  var sinePoints = zip(seq(0, sines.length), reverse(sines));
+  var sinePoints = map(to_point, zip(seq(0, sines.length), reverse(sines)));
   draw_points(ctx, "#0F0", sinePoints);
 
   var cosine = Math.cos(angle) * 50 + (width / 2);
   var cosines = cons(state.user.cosines.slice(0, height / 2 - 50), cosine);
-  var cosinePoints = zip(reverse(cosines), seq(0, cosines.length));
+  var cosinePoints = map(to_point, zip(reverse(cosines), seq(0, cosines.length)));
   draw_points(ctx, "#00F", cosinePoints);
 
   var originPoint = {x: width / 2, y: height / 2};
   var circlePoint = circle_point(angle, originPoint);
+  var circlePoints = cons(state.user.circles.slice(0, 100), circlePoint);
+  draw_points(ctx, "F0F", circlePoints);
 
   out("t1", "Angle: " + angle);
   draw_line(ctx, originPoint, circlePoint);
@@ -35,12 +37,12 @@ function render(state){
   out("t12", "last cosine point: x: " + lastCosinePoint[0]
              + ", y: " + lastCosinePoint[1]);
 
-  draw_line(ctx, circlePoint, {x: lastSinePoint[0], y: lastSinePoint[1]});
-  draw_line(ctx, circlePoint, {x: lastCosinePoint[0], y: lastCosinePoint[1]});
-  draw_line(ctx, circlePoint, hd(cosinePoints));
+  draw_line(ctx, circlePoint, lastSinePoint);
+  draw_line(ctx, circlePoint, lastCosinePoint);
 
   state.user.sines = sines;
   state.user.cosines = cosines;
+  state.user.circles = circlePoints;
   return state;
 }
 
@@ -83,6 +85,7 @@ function draw_line(ctx, point1, point2){
             "x2: " + point2.x + ", y2: " + point2.y);
   ctx.strokeStyle = "#00F";
   ctx.beginPath(),
+  ctx.lineWidth = 0.5;
   ctx.moveTo(point1.x, point1.y),
   ctx.lineTo(point2.x, point2.y),
   ctx.stroke();
@@ -95,6 +98,26 @@ function draw_points(ctx, color, points){
 function draw_point(ctx, color, point){
   ctx.beginPath();
   ctx.strokeStyle = color;
-  ctx.arc(0 + point[0], point[1], 1, 0, 2 * Math.PI);
+  ctx.lineWidth = 0.5;
+  ctx.arc(0 + point.x, point.y, 0.5, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function to_point(arr){
+  return {x: arr[0], y: arr[1]};
+}
+
+function gradient(color, length){
+  var rd = color.red / length;
+  var gd = color.green / length;
+  var bd = color.blue / length;
+  var reds = lists:seqBy(0.0, color.red, rd);
+  var greens = lists:seqBy(0.0, color.green, rd);
+  var blues = lists:seqBy(0.0, color.blue, rd);
+
+  return map(to_color, zip3(reds, greens, blues));
+}
+
+function to_color(arr){
+  return foldl(function(e, acc){return acc + toHex(e)}, arr, "#");
 }
