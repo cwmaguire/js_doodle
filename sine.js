@@ -10,29 +10,51 @@ function render(state){
   var angle = round(frame / 100 % (Math.PI * 2));
   var height = state.canvas.height;
   var width = state.canvas.width;
-  var sine = Math.sin(angle) * 50 + (height / 2 + 50);
-  var sines = cons(state.user.sines.slice(0, width / 2), sine);
-  var cosine = Math.cos(angle) * 50 + (height / 2 - 50);
-  var cosines = cons(state.user.cosines.slice(0, width / 2), cosine);
+
+  var sine = Math.sin(angle - Math.PI) * 50 + (height / 2);
+  var sines = cons(state.user.sines.slice(0, width / 2 - 51), sine);
+  var sinePoints = zip(seq(0, sines.length), reverse(sines));
+  draw_points(ctx, "#0F0", sinePoints);
+
+  var cosine = Math.cos(angle) * 50 + (width / 2);
+  var cosines = cons(state.user.cosines.slice(0, height / 2 - 50), cosine);
+  var cosinePoints = zip(reverse(cosines), seq(0, cosines.length));
+  draw_points(ctx, "#00F", cosinePoints);
+
+  var originPoint = {x: width / 2, y: height / 2};
+  var circlePoint = circle_point(angle, originPoint);
 
   out("t1", "Angle: " + angle);
-  draw_line(ctx, line(angle, width / 2, height / 2));
-  draw_points(ctx, "#0F0", sines);
-  draw_points(ctx, "#00F", cosines);
+  draw_line(ctx, originPoint, circlePoint);
+
+  var lastSinePoint = hd(reverse(sinePoints));
+  out("t11", "last sine point: x: " + lastSinePoint[0]
+             + ", y: " + lastSinePoint[1]);
+
+  var lastCosinePoint = hd(reverse(cosinePoints));
+  out("t12", "last cosine point: x: " + lastCosinePoint[0]
+             + ", y: " + lastCosinePoint[1]);
+
+  draw_line(ctx, circlePoint, {x: lastSinePoint[0], y: lastSinePoint[1]});
+  draw_line(ctx, circlePoint, {x: lastCosinePoint[0], y: lastCosinePoint[1]});
+  draw_line(ctx, circlePoint, hd(cosinePoints));
+
   state.user.sines = sines;
   state.user.cosines = cosines;
   return state;
 }
 
-function line(angle, x1, y1){
-  var y1, y2;
+function circle_point(angle, originPoint){
   var length = 50;
   out("t10", "Angle: " + angle + ", clamped: " + angle % (Math.PI / 2));
   var funs = trig_funs(angle);
-  var x2 = round((funs.x)(angle % (Math.PI / 2)) * length);
-  var y2 = round((funs.y)(angle % (Math.PI / 2)) * length);
-  out("t4", "x: " + x2 + ", y: " + y2);
-  out("t5", ": " + x2 + ", y: " + y2);
+  var x = round((funs.x)(angle % (Math.PI / 2)) * length);
+  var y = round((funs.y)(angle % (Math.PI / 2)) * length);
+  out("t4", "x: " + x + ", y: " + y);
+  return {x: x + originPoint.x, y: y + originPoint.y};
+}
+
+function line(angle, x1, y1){
   return {x1: x1, y1: y1, x2: x1 + x2, y2: y1 + y2};
 }
 
@@ -56,24 +78,23 @@ function trig_fun(fun, translation){
   }
 }
 
-function draw_line(ctx, line){
-  out("t7", "line: " + line.x1 + ", " + line.y1 + ", " + round(line.x2) + ", " + round(line.y2));
+function draw_line(ctx, point1, point2){
+  out("t7", "x1: " + point1.x + ", y1: " + point1.y + ", " + 
+            "x2: " + point2.x + ", y2: " + point2.y);
   ctx.strokeStyle = "#00F";
   ctx.beginPath(),
-  ctx.moveTo(line.x1, line.y1),
-  ctx.lineTo(line.x2, line.y2),
+  ctx.moveTo(point1.x, point1.y),
+  ctx.lineTo(point2.x, point2.y),
   ctx.stroke();
 }
 
 function draw_points(ctx, color, points){
-  map(function(p){ draw_point(ctx, color, p) },
-      zip(seq(0, points.length),
-          reverse(points)));
+  map(function(p){ draw_point(ctx, color, p) }, points);
 }
 
 function draw_point(ctx, color, point){
   ctx.beginPath();
   ctx.strokeStyle = color;
-  ctx.arc(0 + point[0], 50 + point[1], 1, 0, 2 * Math.PI);
+  ctx.arc(0 + point[0], point[1], 1, 0, 2 * Math.PI);
   ctx.fill();
 }
