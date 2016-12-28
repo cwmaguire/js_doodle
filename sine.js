@@ -107,17 +107,6 @@ function to_point(arr){
   return {x: arr[0], y: arr[1]};
 }
 
-function gradient(color, length){
-  var rd = color.red / length;
-  var gd = color.green / length;
-  var bd = color.blue / length;
-  var reds = lists:seqBy(0.0, color.red, rd);
-  var greens = lists:seqBy(0.0, color.green, rd);
-  var blues = lists:seqBy(0.0, color.blue, rd);
-
-  return map(to_color, zip3(reds, greens, blues));
-}
-
-function to_color(arr){
-  return foldl(function(e, acc){return acc + toHex(e)}, arr, "#");
+function sequences(component_delta){
+  return seqBy(0.0, component_delta[0], component_delta[1])
 }
