@@ -55,24 +55,15 @@ function gradient(fromColor, toColor, length){
   var deltas = map(apply2(function(f, t){ return (t - f) / length }), zip(fromRGB, toRGB));
   //console.log(deltas);
   var comp_deltas = zip3(fromRGB, toRGB, deltas);
-  //console.log(comp_deltas);
+  console.log(comp_deltas);
 
-  var seqs = map(apply3(sequence), comp_deltas);
+  var seqs = map(apply3(seqBy), comp_deltas);
   //console.log(seqs);
 
   var colors = apply3(zip3)(seqs);
   //console.log(colors);
 
-  return map(rgb_color, apply3(zip3)(map(apply3(sequence), comp_deltas)));
-}
-
-function sequence(from, to, delta){
-  var seq;
-  if(from < to){
-    return seqBy(from, to, delta);
-  }else{
-    return reverse(seqBy(to, from, delta));
-  }
+  return map(rgb_color, apply3(zip3)(map(apply3(seqBy), comp_deltas)));
 }
 
 function rgb_color(arr){

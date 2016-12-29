@@ -106,7 +106,3 @@ function draw_point(ctx, color, point){
 function to_point(arr){
   return {x: arr[0], y: arr[1]};
 }
-
-function sequences(component_delta){
-  return seqBy(0.0, component_delta[0], component_delta[1])
-}
