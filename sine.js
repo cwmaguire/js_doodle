@@ -14,17 +14,20 @@ function render(state){
   var sine = Math.sin(angle - Math.PI) * 50 + (height / 2);
   var sines = cons(state.user.sines.slice(0, width / 2 - 51), sine);
   var sinePoints = map(to_point, zip(seq(0, sines.length), reverse(sines)));
-  draw_points(ctx, "#0F0", sinePoints);
+  var sineColors = gradient("#FEFFFF", "#FF0101", sines.length);
+  draw_points(ctx, sineColors, sinePoints);
 
   var cosine = Math.cos(angle) * 50 + (width / 2);
   var cosines = cons(state.user.cosines.slice(0, height / 2 - 50), cosine);
   var cosinePoints = map(to_point, zip(reverse(cosines), seq(0, cosines.length)));
-  draw_points(ctx, "#00F", cosinePoints);
+  var cosineColors = gradient("#FFFFFE", "#0101FF", cosines.length);
+  draw_points(ctx, cosineColors, cosinePoints);
 
   var originPoint = {x: width / 2, y: height / 2};
   var circlePoint = circle_point(angle, originPoint);
   var circlePoints = cons(state.user.circles.slice(0, 100), circlePoint);
-  draw_points(ctx, "F0F", circlePoints);
+  var circleColors = gradient("#000000", "#FFFFFF", circlePoints.length);
+  draw_points(ctx, circleColors, circlePoints);
 
   out("t1", "Angle: " + angle);
   draw_line(ctx, originPoint, circlePoint);
@@ -91,14 +94,15 @@ function draw_line(ctx, point1, point2){
   ctx.stroke();
 }
 
-function draw_points(ctx, color, points){
-  map(function(p){ draw_point(ctx, color, p) }, points);
+function draw_points(ctx, colors, points){
+  map(apply2(function(p, c){ draw_point(ctx, c, p) }), zip(points, colors));
 }
 
 function draw_point(ctx, color, point){
   ctx.beginPath();
   ctx.strokeStyle = color;
-  ctx.lineWidth = 0.5;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 1;
   ctx.arc(0 + point.x, point.y, 0.5, 0, Math.PI * 2);
   ctx.fill();
 }

@@ -55,7 +55,7 @@ function gradient(fromColor, toColor, length){
   var deltas = map(apply2(function(f, t){ return (t - f) / length }), zip(fromRGB, toRGB));
   //console.log(deltas);
   var comp_deltas = zip3(fromRGB, toRGB, deltas);
-  console.log(comp_deltas);
+  //console.log(comp_deltas);
 
   var seqs = map(apply3(seqBy), comp_deltas);
   //console.log(seqs);
@@ -75,49 +75,14 @@ function color_rgb(color){
 }
 
 function from_hex(hex){
-  var digits = to_list(hex);
-  return foldl(add,
-               map(apply2(hex_place_value),
-                   zip(seq(0, digits.length), reverse(map(to_int, digits)))),
-               0);
+  return parseInt(hex, 16);
 }
 
 function from_hex_Test(){
   return from_hex("f") == 15 &&
          from_hex("A1") == 161 &&
-         from_hex("") == 0 &&   // <-- Not 100% sure about this
          from_hex("0") == 0 &&
          from_hex("100") == 256;
-}
-
-function add(x, y){
-  return x + y;
-}
-
-function to_int(hex_digit){
-  if(!isNaN(hex_digit)){
-    return Number(hex_digit);
-  }
-  return hex_digit.toLowerCase().charCodeAt() - 87;
-}
-
-function to_int_Test(){
-  return to_int("1") == 1 &&
-         to_int("9") == 9 &&
-         to_int("A") == 10 &&
-         to_int("a") == 10 &&
-         to_int("F") == 15 &&
-         to_int("f") == 15;
-}
-
-function hex_place_value(place, digit){
-  return Math.pow(16, place) * digit;
-}
-
-function hex_place_value_Test(){
-  return hex_place_value(3, 15) == 61440 &&
-         hex_place_value(0, 1) == 1 &&
-         hex_place_value(2, 10) == 2560;
 }
 
 function to_list(string, maybe_list){

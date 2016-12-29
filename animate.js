@@ -7,7 +7,7 @@ function animate(){
   animate_({animation: {lastFrame: 0,
                         ellapsed: 0,
                         ellapsedMillis: 0,
-                        framesPerSecond: 40},
+                        framesPerSecond: 30},
             canvas: canvas,
             context: canvas.getContext("2d"),
             user: impl_state});
@@ -35,7 +35,7 @@ function animate_(state){
   }
   anim.lastFrame = anim.frame;
 
-  if(anim.frame > 2000){
+  if(anim.frame > 500){
     return 0;
   }
 
