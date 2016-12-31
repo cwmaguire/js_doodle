@@ -4,10 +4,17 @@
     <script src="tree.js"></script>
     <script src="lists.js"></script>
     <script src="test.js"></script>
-    <script src="util.js"></script>
+    <script src="js_util.js"></script>
+    <style>
+      p {margin: 7px;}
+    </style>
 </head>
 <body>
-    <canvas id="canvas1" height="500" width="500"></canvas>
+    <canvas id="canvas1" height="350" width="500" style="border: 1px solid black; float: left;"></canvas>
+    <p><input id="r" type="range" value=1 step=0.1></p>
+    <p><input id="l" type="range" value=0.5 step=0.01></p>
+    <p><input id="n" type="range" value=4 max=10></p>
+    <p><input id="c" type="color"></p>
     <p><input id="t1" type=text style="width:300px"></p>
     <p><input id="t2" type=text style="width:300px"></p>
     <p><input id="t3" type=text style="width:300px"></p>
@@ -21,6 +28,10 @@
     <p><input id="t11" type=text style="width:300px"></p>
     <p><input id="t12" type=text style="width:300px"></p>
     <p id="results" style="width:400px; height:200px;"></p>
-<script language="JavaScript">animate()</script>
+    <script language="JavaScript">animate()</script>
+    <script type="text/javascript">
+      elem("r").max = Math.PI * 2;
+      elem("l").max = 1.0;
+    </script>
 </body>
 </html>

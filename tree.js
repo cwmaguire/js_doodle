@@ -2,10 +2,9 @@
 
 function animate(){
   out("t2", "true");
-  var canvas = document.getElementById("canvas1");
+  var canvas = elem("canvas1");
   var angles = seqBy(0.0, Math.PI * 1.5, 0.03);
   angles = concat(angles, reverse(angles));
-  //console.log(angles);
   animate_({lastFrame: 0,
             ellapsed: 0,
             ellapsedMillis: 0,
@@ -48,27 +47,27 @@ function animate_(state){
 }
 
 function render(state){
-  var c = document.getElementById("canvas1");
+  var c = elem("canvas1");
   var ctx = c.getContext("2d");
   var h = c.height;
   var w = c.width;
   clear(ctx, w, h);
-  //ctx.fillStyle = rgb(state.frame);
-  ctx.strokeStyle = "#F00";
+  ctx.strokeStyle = elem("c").value;
 
   var lengthd = (state.frame % 100)/100 * Math.PI;
-  var lengths = reverse(map(length_fun(c, lengthd), seq(1,5)));
+  var lengths = map(length_fun(c, lengthd), seq(1,5));
 
   var perpendicular_line = {x1: c.width / 2,
                             y1: c.height,
                             x2: c.width / 2,
-                            y2: c.height - c.height / 5,
+                            y2: c.height - c.height * (Math.pow(elem("l").value, 3)),
                             a: 0};
 
-  //var angle = (state.frame * .03) % (Math.PI);
-  var angle = state.angles[state.frame % state.angles.length];
+  //console.log(lengths);
+
+  //var angle = state.angles[state.frame % state.angles.length];
+  var angle = elem("r").value;
   out("t9", "angle " + angle);
-  //var lines_ = lines(tl(lengths), round(Math.PI * 1.2), [perpendicular_line], []);
   var lines_ = lines(tl(lengths), round(angle), [perpendicular_line], []);
   map(function(line){
           draw_line(ctx, line)
@@ -84,22 +83,17 @@ function length_fun(canvas, lengthd){
 }
 
 function length(canvas, d, i){
-  return (canvas.height / (i + 2) * Math.sin(d));
+  //return (canvas.height / (i + 2) * Math.sin(d));
+  return (canvas.height * (Math.pow(elem("l").value, i)));
 }
 
 // for every point, angle and count, create N more points at angles N0..N1 where N is > 1
 
 function lines(lengths, arc, parent_lines, ancestor_lines){
-  //console.log("lengths: " + lengths);
-  //console.log("arc: " + arc);
-  //console.log("parent_lines: " + parent_lines);
-  //console.log("ancestor_lines: " + ancestor_lines);
   if(lengths.length == 0){
     return ancestor_lines;
   }
-  var angles = arc_angles(5, arc);
-  //console.log("");
-  //console.log("angles: " + angles);
+  var angles = arc_angles(elem("n").value, arc);
   var restLengths = tl(lengths);
   var restLines = concat(parent_lines, ancestor_lines);
   var line_angles = cross_product(parent_lines, angles);
@@ -237,6 +231,7 @@ function set(obj, field, value){
 
 function draw_line(ctx, line){
   ctx.beginPath(),
+  ctx.strokeStyle = elem("c").value;
   ctx.moveTo(line.x1, line.y1),
   ctx.lineTo(line.x2, line.y2),
   ctx.stroke();
@@ -244,15 +239,4 @@ function draw_line(ctx, line){
 
 function clear(ctx, h, w){
   ctx.clearRect(0, 0, h, w);
-}
-
-function rgb(i){
-  var r = mod255(mod255(i) * 2);
-  var g = 255 - mod255(i * 4);
-  var b = 255 - mod255(i * 4);
-  return ("#" + toHex(r) + toHex(g) + toHex(b)).toUpperCase();
-}
-
-function mod255(i){
-  return i % 255;
 }

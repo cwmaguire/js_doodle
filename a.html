@@ -1,14 +1,19 @@
+<!DOCTYPE html>
 <html>
   <head>
     <script src="lists.js"></script>
     <script src="test.js"></script>
-    <script src="util.js"></script>
+    <script src="js_util.js"></script>
     <style>
       #canvas1{
         position: fixed;
         top: 10;
-        left: 310;
+        left: 310px;
         border: 1px solid yellow;
+      }
+      #canvas2{
+        position: fixed;
+        border: 1px solid red;
       }
     </style>
   </head>
@@ -27,6 +32,8 @@
     <p><input id="t11" type=text style="width:300px"></p>
     <p><input id="t12" type=text style="width:300px"></p>
     <p id="results" style="width:400px; height:200px;"></p>
+
+    <canvas id="canvas2" width=500 height=400></canvas>
 
     <script src="p.js"></script>
     <script>test();</script>
