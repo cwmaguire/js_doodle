@@ -52,10 +52,15 @@ function load_script(script){
   currentScript = s;
 
   s.onload = function() {
-    // I'm assuming loading a new script with a render
-    // function will overwrite the previous one
-    animation.animate(init(), render);
+    run_current_script();
   };
 
   document.body.appendChild(s);
+}
+
+function run_current_script(){
+  console.log("Running current script");
+  // I'm assuming loading a new script with a render
+  // function will overwrite the previous one
+  animation.animate(init(), render);
 }
