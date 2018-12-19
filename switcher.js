@@ -62,5 +62,10 @@ function run_current_script(){
   console.log("Running current script");
   // I'm assuming loading a new script with a render
   // function will overwrite the previous one
-  animation.animate(init(), render);
+  let initState = {};
+  if(window['init']){
+    initState = init();
+  }
+
+  animation.animate(initState, render);
 }

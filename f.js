@@ -3,31 +3,7 @@
 // Doesn't seem to do anything.
 //
 
-var go = false;
-var period = 500;
-var c;
-var ctx;
-
-function animate(){
-  c = document.getElementById("canvas1");
-  c.width = 500;
-  c.height = 300;
-  ctx = c.getContext("2d");
-  var time = (new Date()).getTime();
-  var x = c.width;
-  var y = c.height;
-  console.log("B: x,y: " + x + ", " + y);
-  render();
-  console.log("A: x,y: " + x + ", " + y);
-  var nextAnimateTime = time + period - (new Date()).getTime();
-  //console.log("Writing out at " + nextAnimateTime);
-  console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
-  if(go){
-    setTimeout(function(){animate()}, nextAnimateTime);
-  }
-}
-
-function render(){
+function render({canvas: c, context: ctx}){
   var time = (new Date()).getTime();
   var x = Math.floor(c.width / 2);
   var y = Math.floor(c.height / 2);

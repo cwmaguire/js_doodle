@@ -5,10 +5,6 @@
 // or how long I used it for.
 //
 
-function init(){
-  return 0
-}
-
 function render({canvas: c, context: ctx}){
   var time = (new Date()).getTime();
   var x = Math.floor(c.width / 2);

@@ -7,10 +7,6 @@
 // NOPE.
 //
 
-function init(){
-  return 0;
-}
-
 function render({canvas: c, context: ctx}){
   let time = (new Date()).getTime();
   let x = Math.floor(c.width / 2);
