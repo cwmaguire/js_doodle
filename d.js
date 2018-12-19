@@ -5,30 +5,8 @@
 // or how long I used it for.
 //
 
-var go = true;
-var period = 500;
-
-function go(){
-  alert("hi!");
-  return 0;
-}
-
-function b(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-  ctx.fillStyle = "#FFFFA0";
-  ctx.strokeRect(0,0,c.width,c.height);
-}
-
-function animate(){
-  var time = (new Date()).getTime();
-  render();
-  var nextAnimateTime = time + period - (new Date()).getTime();
-  //console.log("Writing out at " + nextAnimateTime);
-  console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
-  if(go){
-    setTimeout(function(){animate()}, nextAnimateTime);
-  }
+function init(){
+  return 0
 }
 
 function render(){

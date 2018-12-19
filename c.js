@@ -76,33 +76,6 @@ function timeRGB(time){
   return ("#" + r.toString(16) + g.toString(16) + b.toString(16)).toUpperCase();
 }
 
-function drawLine(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-
-  ctx.fillStyle = "#000000";
-  ctx.strokeStyle = "#000000";
-
-  ctx.beginPath();
-  ctx.moveTo(10, Math.floor(c.height / 2));
-  ctx.lineTo(c.width - 10, Math.floor(c.height / 2));
-  ctx.stroke();
-}
-
-function skew(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-
-  ctx.fillStyle = "#000000";
-  ctx.strokeStyle = "#000000";
-
-  ctx.fillRect(10, 10, 40, 40);
-  ctx.transform(1, 0.5, 0.5, 1, 1, 1);
-  ctx.fillRect(10, 10, 40, 40);
-  ctx.transform(1, 0.5, 0.5, 1, 1, 1);
-  ctx.fillRect(10, 10, 40, 40);
-}
-
 function rotate(){
   var c = document.getElementById("canvas1");
   var ctx = c.getContext("2d");
