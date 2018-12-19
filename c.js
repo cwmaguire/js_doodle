@@ -13,9 +13,7 @@ function init(){
   return times;
 }
 
-function render(times){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
+function render({canvas: c, context: ctx, state: times}){
   var time = (new Date()).getTime();
   var x = Math.floor(c.width / 2);
   var y = Math.floor(c.height / 2);
@@ -94,8 +92,4 @@ function rotate(){
   ctx.translate(Math.floor(6), Math.floor(-7));
   ctx.fillStyle = "#FF0000";
   ctx.fillRect(10, 10, 40, 40);
-}
-
-function out(field, text){
-  document.getElementById(field).value = text;
 }

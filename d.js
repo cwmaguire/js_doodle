@@ -9,9 +9,7 @@ function init(){
   return 0
 }
 
-function render(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
+function render({canvas: c, context: ctx}){
   var time = (new Date()).getTime();
   var x = Math.floor(c.width / 2);
   var y = Math.floor(c.height / 2);
@@ -29,8 +27,4 @@ function render(){
   yTrans = -Math.sin(angle) * x;
   out("t3", "yTrans = " + yTrans);
   ctx.translate(xTrans, yTrans);
-}
-
-function out(field, text){
-  document.getElementById(field).value = text;
 }

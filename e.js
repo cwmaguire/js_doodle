@@ -7,32 +7,14 @@
 // NOPE.
 //
 
-var go = true;
-var period = 500;
-var c;
-var ctx;
-
-function animate(){
-  c = document.getElementById("canvas1");
-  ctx = c.getContext("2d");
-
-  //c.width = 500;
-  //c.height = 300;
-
-  var time = (new Date()).getTime();
-  render();
-  var nextAnimateTime = time + period - (new Date()).getTime();
-  //console.log("Writing out at " + nextAnimateTime);
-  //console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
-  if(go){
-    setTimeout(function(){animate()}, nextAnimateTime);
-  }
+function init(){
+  return 0;
 }
 
-function render(){
-  var time = (new Date()).getTime();
-  var x = Math.floor(c.width / 2);
-  var y = Math.floor(c.height / 2);
+function render({canvas: c, context: ctx}){
+  let time = (new Date()).getTime();
+  let x = Math.floor(c.width / 2);
+  let y = Math.floor(c.height / 2);
 
   out("t1", (new Date()).getTime() + " - x,y: " + x + "," + y);
 
@@ -77,8 +59,4 @@ function render(){
   yTrans = -Math.sin(angle) * x;
   out("t3", "yTrans = " + yTrans);
   ctx.translate(xTrans, yTrans);
-}
-
-function out(field, text){
-  document.getElementById(field).value = text;
 }

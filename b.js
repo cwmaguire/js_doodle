@@ -1,25 +1,10 @@
-function go(){
-  alert("hi!");
-  return 0;
-}
-
-function b(){
-  let c = document.getElementById("canvas1");
-  let ctx = c.getContext("2d");
-  ctx.fillStyle = "#FFFFA0";
-  ctx.strokeRect(0,0,c.width,c.height);
-}
-
 function init(){
   let time = (new Date()).getTime();
   let times = [{rgb: timeRGB(time), time: time, rotations: 0}];
   return times;
 }
 
-function render(times){
-  let c = document.getElementById("canvas1");
-  let ctx = c.getContext("2d");
-
+function render({canvas: c, context: ctx, state: times}){
   let time = (new Date()).getTime();
   let x = Math.floor(c.width / 2);
   let y = Math.floor(c.height / 2);
