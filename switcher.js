@@ -32,7 +32,7 @@ function change_script(event){
   let input = event.target;
   let value = input.value;
   input.value = "";
-  let isAnimationCancelled = true;
+  animation.cancel();
   let existingScript = currentScript;
   if(currentScript){
     currentScript.remove();
@@ -52,7 +52,9 @@ function load_script(script){
   currentScript = s;
 
   s.onload = function() {
-    animate(animation_continue_check);
+    // I'm assuming loading a new script with a render
+    // function will overwrite the previous one
+    animation.animate(init(), render);
   };
 
   document.body.appendChild(s);
