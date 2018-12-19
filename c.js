@@ -7,35 +7,10 @@
 // some better canvas outlines.
 //
 
-var go = true;
-var period = 500;
-
-function go(){
-  alert("hi!");
-  return 0;
-}
-
-function b(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-  ctx.fillStyle = "#FFFFA0";
-  ctx.strokeRect(0,0,c.width,c.height);
-}
-
-function animate(times){
-  if(times == undefined){
-    time = (new Date()).getTime();
-    times = [{rgb: timeRGB(time), time: time, rotations: 0}];
-  }
-  var date = new Date();
-  var time = (new Date()).getTime();
-  var numRotates = render(times);
-  var nextAnimateTime = time + period - (new Date()).getTime();
-  //console.log("Writing out at " + nextAnimateTime);
-  console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
-  if(go){
-    setTimeout(function(){animate(times)}, nextAnimateTime);
-  }
+function init(){
+  let time = (new Date()).getTime();
+  let times = [{rgb: timeRGB(time), time: time, rotations: 0}];
+  return times;
 }
 
 function render(times){
