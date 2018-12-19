@@ -2,8 +2,10 @@
 <html>
   <head>
     <script src="lists.js"></script>
+    <script src="animate.js"></script>
     <script src="test.js"></script>
     <script src="js_util.js"></script>
+    <script src="switcher.js"></script>
     <style>
       #canvas1{
         position: fixed;
@@ -17,8 +19,14 @@
       }
     </style>
   </head>
-  <body>
+  <body onload="load_scripts();">
     <canvas id="canvas1" width=500 height=400></canvas>
+    <p>
+      <input id="scriptSwitcher" list="scripts"
+             onchange="change_script(event)">
+      <datalist id="scripts">
+      </datalist>
+    </p>
     <p><input id="t1" type=text style="width:300px"></p>
     <p><input id="t2" type=text style="width:300px"></p>
     <p><input id="t3" type=text style="width:300px"></p>
@@ -37,6 +45,6 @@
 
     <script src="p.js"></script>
     <script>test();</script>
-    <script>animate();</script>
+    <!--<script>animate();</script>-->
   </body>
 </html>
