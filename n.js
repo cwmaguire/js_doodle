@@ -1,63 +1,74 @@
-var go = true;
-var c;
-var h;
-var w;
-var mid;
-var MAX = 80;
-var dist = 2;
-
-out("t1", "50");
-init();
+function scriptDesc(){
+  return 'A growing string?';
+}
 
 function init(){
-  var c = document.getElementById("canvas1");
-  c.style.left = "310px";
-  c.style.top = "20px";
-
-}
-
-function animate(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-  var h = c.height = 300;
-  var w = c.width = 300;
+  let c = elem('canvas1');
+  let ctx = c.getContext('2d');
+  let h = c.height;
+  let w = c.width;
   ctx.translate(w / 2, h / 2);
-  animate_(ctx, []);
+  return {count: 2,
+          objs: update_objects([], 1, 80, 2),
+          max: 80,
+          dist: 2};
 }
 
-function animate_(ctx, objs){
-  var c = document.getElementById("canvas1");
-  var h = c.height;
-  var w = c.width;
+function render({canvas: c,
+                 context: ctx,
+                 state: {count, objs, max, dist}}){
 
-  var newObjs = updateObjects(objs);
+  objs = update_objects(objs, count, max, dist);
 
-  var period = read("t1", "int");
-  var time = (new Date()).getTime();
-  out("t2", "Rendering at " + time);
-  render(ctx, {h: h, w: w}, newObjs.slice(0));
-  out("t3", "Finished at " + (new Date()).getTime());
-  var nextAnimateTime = time + period - (new Date()).getTime();
+  let i = 0;
+  let prev;
+  let obj;
+  let totalX = 0;
+  let totalY = 0;
+  let dx;
+  let dy;
+  let angle = 0;
 
-  if(go){
-    setTimeout(function(){animate_(ctx, newObjs)}, nextAnimateTime);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  for(i = 0; i < objs.length; i++){
+    obj = objs[i];
+    out("t9", "obj.a: " + obj.a);
+
+    angle = Math.min(Math.PI * 2, obj.a);
+
+    dx = Math.floor(obj.x * Math.sin(angle));
+    dy = Math.floor(obj.y * Math.cos(angle));
+    totalX += dx;
+    totalY += dy;
+    console.log(`obj.a: ${obj.a}, angle: ${angle}, obj.x: ${obj.x}, obj.y: ${obj.y}, dx: ${dx}, dy: ${dy}, totalX: ${totalX}, totalY: ${totalY}`);
+    out("t7", "totalX: " + totalX + ", totalY: " + totalY);
+    ctx.lineTo(totalX, totalY);
   }
+  ctx.stroke();
+
+  return {count: count + 1, objs: objs, max: max, dist: dist};
 }
 
-function updateObjects(objs){
-  var angle = Math.PI / 64;
-  var strategies = [-angle, 0, angle];
-  var newestObjs;
-  var last;
-  var strategy;
-  var deltaAngle = 0;
-  var newAngle = 0;
+function update_objects(objs, count, max, dist){
+  let angle = Math.PI / 64 * count;
+  let strategies = [-angle, 0, angle];
+  let newestObjs;
+  let last;
+  let strategy;
+  let deltaAngle = 0;
+  let newAngle = 0;
+  let index;
+  let dx = dist;
+  let dy = dist;
 
-  if(objs.length < MAX){
+  if(objs.length < max){
     newestObjs = objs.slice(0);
   }else{
     newestObjs = objs.slice(1);
   }
+
+  //console.log(`objs.length: ${objs.length}`);
 
   if(objs.length == 0){
     last = {id: 0, x: 0, y: 0,
@@ -68,14 +79,10 @@ function updateObjects(objs){
     last = newestObjs[newestObjs.length - 1];
   }
 
-  var index;
   if(last.id % 15 == 0){
     deltaAngle = Math.PI * Math.random();
   }
 
-  //newAngle = (deltaAngle + last.a + last.da) % (2 * Math.PI);
-  //newAngle = (Math.PI * 2 * Math.random()) - (Math.PI);
-  //newAngle = (last.a + Math.PI * Math.random() / 8) % (Math.PI * 2)
   newAngle = last.a + last.da;
   if(last.id % 30 == 0){
     newAngle = (newAngle + (Math.PI * Math.random() / 8)) % (Math.PI * 2);
@@ -87,8 +94,6 @@ function updateObjects(objs){
             ", " + last.y +
             ", " + last.a +
             ", " + last.da);
-  var dx = dist;
-  var dy = dist;
   out("t4", "Adding: " + dx + "," + dy + ", " + newAngle);
   newestObjs.push({id: last.id + 1,
                    x: dx, y: dy,
@@ -98,53 +103,3 @@ function updateObjects(objs){
   return newestObjs.slice(0);
 }
 
-
-function render(ctx, c, objs){
-  var x = clear(ctx, c);
-  //ctx.rotate(Math.PI / 32);
-  var i = 0;
-  var prev;
-  var obj;
-  var totalX = 0;
-  var totalY = 0;
-  var dx;
-  var dy;
-  var angle = 0;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  for(i = 0; i < objs.length; i++){
-    obj = objs[i];
-    out("t9", "obj.a: " + obj.a);
-
-    angle = Math.min(Math.PI, obj.a);
-
-    dx = Math.floor(obj.x * Math.sin(angle));
-    dy = Math.floor(obj.y * Math.cos(angle));
-    totalX += dx;
-    totalY += dy;
-    out("t7", "totalX: " + totalX + ", totalY: " + totalY);
-    ctx.lineTo(totalX, totalY);
-  }
-  ctx.stroke();
-}
-
-function clear(ctx, c){
-  var left = -(c.w / 2);
-  var top = -(c.h / 2);
-  ctx.clearRect(left, top, c.w + 200, c.h + 200);
-}
-
-function out(field, text){
-  document.getElementById(field).value = text;
-}
-
-function read(field, type){
-  return cast(document.getElementById(field).value, type);
-}
-
-function cast(value, type){
-  switch(type){
-    case "int":
-      return parseInt(value);
-  }
-}
