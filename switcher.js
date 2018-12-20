@@ -67,6 +67,5 @@ function run_current_script(){
       //console.log(`run_current_script: initState[${p}]: ${initState[p]}`);
     //}
   }
-
   animation.animate(initState, render, frameLimit);
 }
