@@ -40,11 +40,6 @@ function change_script(event){
   load_script(value);
 }
 
-function animation_continue_check(id){
-  console.log(`animation_continue_check(${id})`);
-  return !isAnimationCancelled;
-}
-
 function load_script(script){
   let s = document.createElement("script");
   s.src = script;
@@ -59,7 +54,6 @@ function load_script(script){
 }
 
 function run_current_script(){
-  console.log("Running current script");
   // I'm assuming loading a new script with a render
   // function will overwrite the previous one
   let initState = {};

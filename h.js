@@ -18,14 +18,9 @@
 //  change with canvas.height = Y; canvas.width = X;
 //  NOT canvas.style.height = Y; canvase.style.width = X;
 
-var go = true;
-var period = 500;
-var c;
-var ctx;
 var z = 0;
 
-function animate(){
-
+function init(){
   c = document.getElementById("canvas1");
   c.style.top = 0;
   c.style.left = 0;
@@ -34,7 +29,6 @@ function animate(){
   c.height = 100;
   c.width = 100;
   c.style.border = "1px solid black";
-  ctx = c.getContext("2d");
 
   c2 = document.getElementById("canvas2");
   c2.style.top = "50px";
@@ -42,20 +36,12 @@ function animate(){
   c2.style.height = "100px";
   c2.style.width = "100px";
   ctx2 = c2.getContext("2d");
-  //c.width = 500;
-  //c.height = 300;
 
-  var time = (new Date()).getTime();
-  render();
-  var nextAnimateTime = time + period - (new Date()).getTime();
-  //console.log("Writing out at " + nextAnimateTime);
-  //console.log("Drawing took (" + (new Date()).getTime() + ", " + time + ") " + ((new Date()).getTime() - time));
-  if(go){
-    setTimeout(function(){animate()}, nextAnimateTime);
-  }
+  return {c2: c2, ctx2: ctx2};
 }
 
-function render(){
+function render({canvas: c, context: ctx, state}){
+  let {c2, ctx2} = state;
   ctx.fillStyle = "#00A";
   ctx.beginPath();
   ctx.arc(100, 130, 60, Math.PI / 8, 2*Math.PI);
@@ -67,8 +53,6 @@ function render(){
   ctx2.fill();
 
   ctx2.rotate(Math.PI / 16);
-}
 
-function out(field, text){
-  document.getElementById(field).value = text;
+  return state;
 }
