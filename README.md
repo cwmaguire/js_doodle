@@ -16,19 +16,18 @@ still haven't seen any use! :). The "t1" through "t6" simply stand for
 "text field 1...6". Like I said, screwing around. Of course, I'm not so
 reckless as to forego using git! That's just asking for trouble.)
 
-Between the comments in the various .js files and the commit comments
-it's possible to figure out what _some_ of the .js files are about.
-Until I implement a non-horrible way of trying out the different
-animations and drawings each of the .js files in a.html can be
-uncommented (one at a time) to see what they do. They all use the
-animate() call. (I just kept copying the same file, renaming it and
-tweaking it so it used the same format.)
+I've implemented a script switcher to try out the different scripts.
+The datalist has to be updated manually though. I don't yet know how to
+find available scripts dynamically.
+
+All the scripts have been updated to use my animation library. The
+number of frames to run the animation can be specified and the animation
+can be stopped.
 
 Learnings:
 * Canvas rotations rotate from origin, not center
  * D'oh! You can draw "outside" the context so you can put the context
-   in the conext in the center and rotate it around the middle of the
-   canvas
+   in the center and rotate it around the middle of the canvas
 * It takes me a lot of trig to get a point back to where it started
   after rotating
 * A bottom canvas will show through an empty top canvas
