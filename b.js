@@ -1,3 +1,7 @@
+function scriptDesc(){
+  return 'Rotating squares';
+}
+
 function init(){
   let time = (new Date()).getTime();
   let times = [{rgb: timeRGB(time), time: time, rotations: 0}];
