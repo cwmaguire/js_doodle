@@ -20,17 +20,17 @@
       }
     </style>
   </head>
-  <body onload="load_scripts();">
+  <body onload="jsDoodle.save_canvas_states(); load_scripts();">
     <canvas id="canvas1" width=500 height=400></canvas>
     <p>
       <input id="scriptSwitcher" list="scripts"
-             onchange="change_script(event)">
+             onchange="jsDoodle.reset_canvases(); change_script(event);">
       <datalist id="scripts">
       </datalist>
       <input id="animateButton"
              type="button"
              value="Animate"
-             onclick="run_current_script();">
+             onclick="jsDoodle.reset_canvases(); run_current_script();">
     </p>
     <p><input id="t1" type=text style="width:300px"></p>
     <p><input id="t2" type=text style="width:300px"></p>
