@@ -31,7 +31,12 @@
              type="button"
              value="Animate"
              onclick="jsDoodle.reset_canvases(); run_current_script();">
-      <input id="scriptDescInput" type="text" size=150>
+      <input id="stopButton"
+             type="button"
+             value="Stop"
+             onclick="animation.cancel()">
+      <input id="frameLimit" type="text" size=10 value="500">
+      <input id="scriptDescInput" type="text" size=100>
     </p>
     <p><input id="t1" type=text style="width:300px"></p>
     <p><input id="t2" type=text style="width:300px"></p>

@@ -59,6 +59,7 @@ function load_script(script){
 }
 
 function run_current_script(){
+  let frameLimit = cast(elem('frameLimit').value, 'int');
   let initState = {};
   if(window['init']){
     initState = init();
@@ -67,5 +68,5 @@ function run_current_script(){
     //}
   }
 
-  animation.animate(initState, render);
+  animation.animate(initState, render, frameLimit);
 }
