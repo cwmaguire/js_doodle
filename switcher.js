@@ -59,11 +59,12 @@ function load_script(script){
 }
 
 function run_current_script(){
-  // I'm assuming loading a new script with a render
-  // function will overwrite the previous one
   let initState = {};
   if(window['init']){
     initState = init();
+    //for(let p in initState){
+      //console.log(`run_current_script: initState[${p}]: ${initState[p]}`);
+    //}
   }
 
   animation.animate(initState, render);

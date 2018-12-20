@@ -1,64 +1,69 @@
-var go = true;
-var c;
-var h;
-var w;
-var mid;
-var MAX = 80;
-var dist = 2;
 
-out("t1", "50");
-init();
+function scriptDesc(){
+  return 'Uh, some kind of rotating, changing strings?';
+}
 
 function init(){
-  var c = document.getElementById("canvas1");
-  c.style.left = "310px";
-  c.style.top = "20px";
-
-}
-
-function animate(){
-  var c = document.getElementById("canvas1");
-  var ctx = c.getContext("2d");
-  var h = c.height = 300;
-  var w = c.width = 300;
+  let c = document.getElementById('canvas1');
+  let ctx = c.getContext('2d');
+  let w = c.width;
+  let h = c.height;
   ctx.translate(w / 2, h / 2);
-  animate_(ctx, []);
+  return {count: 2,
+          objs: update_objects([], 1, 80, 2),
+          max: 80,
+          dist: 2};
 }
 
-function animate_(ctx, objs){
-  var c = document.getElementById("canvas1");
-  var h = c.height;
-  var w = c.width;
+function render({canvas: c,
+                 context: ctx,
+                 state: {count, objs, max, dist}}){
+  console.log(`render: count: ${count}`);
+  ctx.rotate(Math.PI / 32 * count);
+  let i = 0;
+  //let prev;
+  let obj;
+  let totalX = 0;
+  let totalY = 0;
+  let totalA = 0;
+  let dx;
+  let dy;
 
-  var newObjs = updateObjects(objs);
-
-  var period = read("t1", "int");
-  var time = (new Date()).getTime();
-  out("t2", "Rendering at " + time);
-  render(ctx, {h: h, w: w}, newObjs.slice(0));
-  out("t3", "Finished at " + (new Date()).getTime());
-  var nextAnimateTime = time + period - (new Date()).getTime();
-
-  if(go){
-    setTimeout(function(){animate_(ctx, newObjs)}, nextAnimateTime);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  for(let i = 0; i < objs.length; i++){
+    obj = objs[i];
+    out("t9", "obj.a: " + obj.a);
+    out("t10", "Increments: " + objs.length);
+    totalA += incrementalWeight(objs.length, i + 1, obj.a);
+    totalA = Math.max(Math.min(totalA, Math.PI * 0.75), -Math.PI * 0.75);
+    out("t8", "totalA: " + totalA);
+    dx = Math.floor(obj.x * Math.sin(totalA));
+    dy = Math.floor(obj.y * Math.cos(totalA));
+    totalX += dx;
+    totalY += dy;
+    ctx.lineTo(totalX, totalY);
   }
+  ctx.stroke();
+  objs = update_objects(objs, count, max, dist);
+  return {count: count + 1, objs: objs, max: max, dist: dist};
 }
 
-function updateObjects(objs){
-  var angle = Math.PI / 64;
-  var strategies = [-angle, 0, angle];
-  var newestObjs;
-  var last;
-  var strategy;
-  var deltaAngle = 0;
+function update_objects(objs, count, max, dist){
+  console.log(`updateObjects: count: ${count}`);
+  let angle = Math.PI / 64 * count;
+  let strategies = [-angle, 0, angle];
+  let newestObjs;
+  let last;
+  let strategy;
+  let deltaAngle = 0;
+  let index;
 
   out("t7", strategies);
 
-  if(objs.length < MAX){
-    //out("t7", "objs.length < MAX: " + objs.length);
+  if(objs.length < max){
     newestObjs = objs.slice(0);
   }else{
-    //out("t7", "objs.length !< MAX: " + objs.length);
     newestObjs = objs.slice(1);
   }
 
@@ -68,19 +73,14 @@ function updateObjects(objs){
     last = newestObjs[newestObjs.length - 1];
   }
 
-  // PI / 1 = 180
-  // PI / 2 = 90
-  // PI / 4 = 45
-  // PI / 8 = 22.5
-  // PI / 16 = 11.25
-  // PI / 32 = 5.625
-  // PI / 64 = 2.8125
-
-  var index;
   if(last.id % 10 == 0){
     strategy = randOther(last.strategy, strategies.length);
     out("t12", "new strategy: " + strategy);
     deltaAngle = strategies[strategy];
+    //for(strat of strategies){
+      //console.log(`strat: ${strat}`);
+    //}
+    //console.log(`strategy: ${strategy}, deltaAngle: ${deltaAngle}`);
     out("t11", "new deltaAngle: " + deltaAngle);
   }else{
     deltaAngle = last.da;
@@ -91,16 +91,14 @@ function updateObjects(objs){
 
   newAngle = Math.max(Math.min(last.a + deltaAngle, Math.PI/16), -Math.PI/16);
 
-  //var newAngle = angle;
-  //out("t5", "randAngle: " + angle);
   out("t5", "newAngle: " + newAngle);
   out("t6", "last: " + last.id +
             ", " + last.x +
             ", " + last.y +
             ", " + last.a +
             ", " + last.da);
-  var dx = dist;
-  var dy = dist;
+  let dx = dist;
+  let dy = dist;
   out("t4", "Adding: " + dx + "," + dy + ", " + newAngle);
   newestObjs.push({id: last.id + 1,
                    x: dx, y: dy,
@@ -111,73 +109,12 @@ function updateObjects(objs){
 }
 
 function randOther(Curr, Max){
-  return (Curr + Math.floor(Math.random() * Max)) % Max;
-  //return (Curr + Math.floor((Math.random() * Max))) % (Max + 1)
-}
-
-/*
- * Trying to figure out why drawing a white rectangle won't clear out the
- * screen.
- *
- * Ah! I wasn't using "beginPath()"
- */
-
-function render(ctx, c, objs){
-  var x = clear(ctx, c);
-  ctx.rotate(Math.PI / 32);
-  //ctx.strokeStyle = "#00F";
-  //ctx.beginPath();
-  //ctx.moveTo(0, 0);
-  //ctx.lineTo(200, 200);
-  //ctx.stroke();
-  //ctx.fillRect(50, 50, 30, 30);
-  //ctx.fillRect(10, 50, 30, 30);
-  //ctx.fillRect(50, 10, 30, 30);
-  //ctx.fillRect(10, 10, 30, 30);
-  var i = 0;
-  var prev;
-  var obj;
-  var totalX = 0;
-  var totalY = 0;
-  var totalA = 0;
-  var dx;
-  var dy;
-  //var radIncrement = radianIncrement(objs.length);
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  for(i = 0; i < objs.length; i++){
-  //for(i = objs.length - 1; i >= 0; i--){
-    obj = objs[i];
-    out("t9", "obj.a: " + obj.a);
-    //totalA += (obj.a * 4 / (objs.length * 2 - i));
-
-    //totalA += sinWaveAngleWeight(radIncrement, i, obj.a);
-    //out("t9", "Increment: " + i);
-    out("t10", "Increments: " + objs.length);
-    totalA += incrementalWeight(objs.length, i + 1, obj.a);
-    totalA = Math.max(Math.min(totalA, Math.PI * 0.75), -Math.PI * 0.75);
-    //totalA += obj.a;
-    out("t8", "totalA: " + totalA);
-    //dx = Math.floor(obj.x * Math.sin(obj.a));
-    //dy = Math.floor(obj.y * Math.cos(obj.a));
-    dx = Math.floor(obj.x * Math.sin(totalA));
-    dy = Math.floor(obj.y * Math.cos(totalA));
-    //totalX += obj.x;
-    //totalY += obj.y;
-    totalX += dx;
-    totalY += dy;
-    //ctx.arc(obj.x, obj.y, 2, 0, Math.PI * 2);
-    ctx.lineTo(totalX, totalY);
-  }
-  ctx.stroke();
+  let result = (Curr + Math.floor(Math.random() * Max)) % Max;
+  //console.log(`Max: ${Max}, Curr: ${Curr}, result: ${result}`);
+  return result;
 }
 
 function incrementalWeight(increments, increment, angle){
-  // 0.2 + range between 0.2 and 1.0 evenly spread over increments 6 through n
-  //console.log("Increments: " + increments +
-              //", increment: " + increment +
-              //", angle: " + angle +
-              //", ratio: " + increment / increments);
   return Math.min(0.4, increment / increments) * angle;
 }
 
@@ -187,25 +124,4 @@ function radianIncrement(n){
 
 function sinWaveAngleWeight(radianIncrement, distanceFromCenter, angle){
   return Math.sin(radianIncrement * distanceFromCenter) * angle;
-}
-
-function clear(ctx, c){
-  var left = -(c.w / 2);
-  var top = -(c.h / 2);
-  ctx.clearRect(left, top, c.w + 200, c.h + 200);
-}
-
-function out(field, text){
-  document.getElementById(field).value = text;
-}
-
-function read(field, type){
-  return cast(document.getElementById(field).value, type);
-}
-
-function cast(value, type){
-  switch(type){
-    case "int":
-      return parseInt(value);
-  }
 }
