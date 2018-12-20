@@ -18,7 +18,10 @@
 //  change with canvas.height = Y; canvas.width = X;
 //  NOT canvas.style.height = Y; canvase.style.width = X;
 
-var z = 0;
+let z = 0;
+function scriptDesc(){
+  return 'Show one canvas through another';
+}
 
 function init(){
   c = document.getElementById("canvas1");

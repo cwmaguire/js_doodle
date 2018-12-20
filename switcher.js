@@ -47,6 +47,11 @@ function load_script(script){
   currentScript = s;
 
   s.onload = function() {
+    if(window['scriptDesc']){
+      elem('scriptDescInput').value = window.scriptDesc();
+    }else{
+      elem('scriptDescInput').value = 'No script description';
+    }
     run_current_script();
   };
 
