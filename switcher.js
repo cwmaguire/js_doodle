@@ -14,6 +14,8 @@ const scripts = ["b.js",
                  "n.js",
                  "o.js",
                  "o2.js",
+                 "o3.js",
+                 "o4.js",
                  "p.js"];
 
 let currentScript;
