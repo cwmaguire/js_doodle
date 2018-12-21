@@ -12,9 +12,13 @@
       }
     </style>
   </head>
-  <body onload="">
-    <canvas id="canvas1" width=500 height=400></canvas>
+  <body onload="load_functions();">
+    <canvas id="canvas1" width=700 height=500></canvas>
     <p>
+      <input id="functionList"
+             list="functions">
+      <datalist id="functions">
+      </datalist>
       <input id="drawButton"
              type="button"
              value="Draw"
