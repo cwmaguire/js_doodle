@@ -13,6 +13,7 @@ const scripts = ["b.js",
                  "m.js",
                  "n.js",
                  "o.js",
+                 "o2.js",
                  "p.js"];
 
 let currentScript;
@@ -60,6 +61,7 @@ function load_script(script){
 
 function run_current_script(){
   let frameLimit = cast(elem('frameLimit').value, 'int');
+  let shouldClear = window['should_clear'] && should_clear();
   let initState = {};
   if(window['init']){
     initState = init();
@@ -67,5 +69,5 @@ function run_current_script(){
       //console.log(`run_current_script: initState[${p}]: ${initState[p]}`);
     //}
   }
-  animation.animate(initState, render, frameLimit);
+  animation.animate(initState, render, frameLimit, shouldClear);
 }
