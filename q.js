@@ -86,10 +86,10 @@ let generators = {
     function(count){
       let numbers = [];
       for(let i = 0; i < count; i++){
-        console.log(`i: ${i}`);
+        //console.log(`i: ${i}`);
         numbers.push(round(Math.sin(Math.PI * (i / count) / 2)));
       }
-      console.log(`numbers: ${numbers}`);
+      //console.log(`numbers: ${numbers}`);
       return numbers;
     },
 
@@ -97,7 +97,7 @@ let generators = {
     function(count){
       let numbers = [];
       for(let i = 0; i < count; i++){
-        console.log(`i: ${i}`);
+        //console.log(`i: ${i}`);
         numbers.push(round(Math.cos(Math.PI * (i / count) / 2)));
       }
       console.log(`numbers: ${numbers}`);
@@ -138,7 +138,23 @@ function group_numbers(fun, count, numCols){
   return columns;
 }
 
-function graph_numbers(fun, count = 10000){
+function average_numbers(fun, count, numCols){
+  let nums = fun(count);
+  let avgNums = parseInt(count / numCols);
+  let numbers = [];
+
+  for(let i = 0, j = 0; i < numCols; i += avgNums, j += 1){
+    let sum = 0;
+    for(let k = i; k < i + avgNums; k++){
+      sum += nums[k];
+    }
+    numbers[j] = sum / numCols;
+  }
+  console.log(`numbers: ${numbers}`);
+  return numbers;
+}
+
+function graph_distribution(fun, count = 10000){
   let c = elem('canvas1');
   let ctx = c.getContext('2d');
   ctx.clearRect(0, 0, c.width, c.height);
@@ -169,8 +185,41 @@ function graph_numbers(fun, count = 10000){
   }
 }
 
-function draw(){
+function graph_numbers(fun, count = 10000){
+  let c = elem('canvas1');
+  let ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  let graphHeight = 300;
+  let graphWidth = 700;
+  let numbers = average_numbers(fun, count, graphWidth);
+  let max = Reflect.apply(Math.max, undefined, numbers);
+  let stepSize = max / graphHeight;
+  let columnSizes = [];
+  for(let i = 0; i < numbers.length; i++){
+    columnSizes[i] = numbers[i] / stepSize;
+  }
+  let maxColSize = Reflect.apply(Math.max, undefined, columnSizes);
+  let colWidth = 1;
+
+  for(let i = 0; i < columnSizes.length; i++){
+    console.log('Drawing column');
+    let h = columnSizes[i];
+    ctx.fillRect(i,
+                 50 + graphHeight - h,
+                 colWidth,
+                 50 + h);
+  }
+}
+
+function distribution(){
   let functionList = elem('functionList');
   let fun = generators[functionList.value];
-  graph_numbers(fun, 100);
+  graph_distribution(fun, 100);
+}
+
+function numbers(){
+  let functionList = elem('functionList');
+  let fun = generators[functionList.value];
+  graph_numbers(fun, 7000);
 }
