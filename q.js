@@ -86,7 +86,6 @@ let generators = {
     function(count){
       let numbers = [];
       for(let i = 0; i < count; i++){
-        //console.log(`i: ${i}`);
         numbers.push(round(Math.sin(Math.PI * (i / count) / 2)));
       }
       //console.log(`numbers: ${numbers}`);
@@ -140,12 +139,12 @@ function group_numbers(fun, count, numCols){
 
 function average_numbers(fun, count, numCols){
   let nums = fun(count);
-  let avgNums = parseInt(count / numCols);
+  let numsToAvg = parseInt(count / numCols);
   let numbers = [];
 
-  for(let i = 0, j = 0; i < numCols; i += avgNums, j += 1){
+  for(let i = 0, j = 0; i < nums.length; i += numsToAvg, j += 1){
     let sum = 0;
-    for(let k = i; k < i + avgNums; k++){
+    for(let k = i; k < i + numsToAvg; k++){
       sum += nums[k];
     }
     numbers[j] = sum / numCols;
@@ -185,6 +184,21 @@ function graph_distribution(fun, count = 10000){
   }
 }
 
+function average_numbers(fun, count, numCols){
+  let nums = fun(count);
+  let numsToAvg = parseInt(count / numCols);
+  let numbers = [];
+
+  for(let i = 0, j = 0; i < nums.length; i += numsToAvg, j += 1){
+    let sum = 0;
+    for(let k = i; k < i + numsToAvg; k++){
+      sum += nums[k];
+    }
+    numbers[j] = sum / numCols;
+  }
+  return numbers;
+}
+
 function graph_numbers(fun, count = 10000){
   let c = elem('canvas1');
   let ctx = c.getContext('2d');
@@ -206,9 +220,9 @@ function graph_numbers(fun, count = 10000){
     console.log('Drawing column');
     let h = columnSizes[i];
     ctx.fillRect(i,
-                 50 + graphHeight - h,
+                 graphHeight - h,
                  colWidth,
-                 50 + h);
+                 h);
   }
 }
 
@@ -220,6 +234,6 @@ function distribution(){
 
 function numbers(){
   let functionList = elem('functionList');
-  let fun = generators[functionList.value];
-  graph_numbers(fun, 7000);
+  let fun = generators[functionList.value] || generators['sin'];
+  graph_numbers(fun, 700);
 }
