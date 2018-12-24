@@ -80,8 +80,34 @@ let generators = {
         numbers.push(Math.random() * 10 + 45);
       }
       return numbers.slice();
+    },
+
+  sin:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        console.log(`i: ${i}`);
+        numbers.push(round(Math.sin(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  cos:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        console.log(`i: ${i}`);
+        numbers.push(round(Math.cos(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
     }
 
+}
+
+function round(f){
+  return Math.round(f * 1000) / 1000;
 }
 
 function load_functions(){
@@ -103,8 +129,9 @@ function group_numbers(fun, count, numCols){
 
   for(let num of nums.sort((x, y) => x - y)){
     let column = Math.floor(num / denominator);
+    //console.log(`num: ${num}, denominator: ${denominator}, column: ${column}`);
     if(!columns[column]){
-      columns[column] = [1];
+      columns[column] = [];
     }
     columns[column].push(1);
   }
@@ -136,9 +163,9 @@ function graph_numbers(fun, count = 10000){
     let x = i ? i * (colWidth + colSpacing) : 0;
     let h = columns[i].length * stepHeight;
     ctx.fillRect(x,
-                 graphHeight - h,
+                 50 + graphHeight - h,
                  colWidth,
-                 h);
+                 50 + h);
   }
 }
 
