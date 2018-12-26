@@ -92,6 +92,37 @@ let generators = {
       return numbers;
     },
 
+  sin_180:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        numbers.push(round(Math.sin(Math.PI * (i / count))));
+      }
+      //console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  cos_180:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        numbers.push(round(Math.cos(Math.PI * (i / count))));
+      }
+      //console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  // Start at PI/4 and go until 5/4 PI
+  cos_180_plus_45:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        numbers.push(round(Math.cos(Math.PI * (i / count) + (Math.PI / 4))));
+      }
+      //console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
   cos:
     function(count){
       let numbers = [];
@@ -101,7 +132,110 @@ let generators = {
       }
       console.log(`numbers: ${numbers}`);
       return numbers;
-    }
+    },
+
+  tan:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        //console.log(`i: ${i}`);
+        numbers.push(round(Math.tan(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  log:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        //console.log(`i: ${i}`);
+        numbers.push(round(Math.log(i)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  tan_log:
+    function(count){
+      let numbers = [];
+      for(let i = 1; i <= count; i++){
+        //console.log(`i: ${i}`);
+        numbers.push(round(Math.log(i) * Math.tan(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  sin_log:
+    function(count){
+      let numbers = [];
+      for(let i = 1; i <= count; i++){
+        //console.log(`i: ${i}`);
+        numbers.push(round(Math.log(i) * Math.sin(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  sin_log:
+    function(count){
+      let numbers = [];
+      for(let i = 1; i <= count; i++){
+        //console.log(`i: ${i}`);
+        numbers.push(round(Math.log(i) * Math.sin(Math.PI * (i / count) / 2)));
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  translated_cos:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        //console.log(`i: ${i}`);
+        if(i == 0){
+          numbers.push(0);
+        }else{
+          numbers.push(round(Math.abs(Math.cos(Math.PI * (i / count)))));
+        }
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  translated_sin:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        //console.log(`i: ${i}`);
+        if(i == 0){
+          numbers.push(0);
+        }else{
+          numbers.push(round(Math.abs(Math.sin(Math.PI * (i / count)))));
+        }
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
+  translated_sin_cos:
+    function(count){
+      let numbers = [];
+      for(let i = 0; i < count; i++){
+        //console.log(`i: ${i}`);
+        if(i == 0){
+          numbers.push(0);
+        }else{
+          let sin = Math.abs(Math.sin(Math.PI * (i / count)));
+          let cos = Math.abs(Math.cos(Math.PI * (i / count)));
+          numbers.push(round(sin + cos));
+        }
+      }
+      console.log(`numbers: ${numbers}`);
+      return numbers;
+    },
+
 
 }
 
