@@ -4,6 +4,7 @@ function scriptDesc(){
 
 function should_clear(){
   return false;
+  //return true;
 }
 
 function init(){
@@ -12,6 +13,8 @@ function init(){
   let h = c.height;
   let w = c.width;
   let numNumbers = 200;
+  let maxSegments = 50;
+  let segmentLength = 8;
 
   // generate a distribution of numbers to draw from
   let numbers = generators.cos_180(numNumbers);
@@ -21,8 +24,8 @@ function init(){
   ctx.translate(w / 2, h / 2);
   return {count: 2,
           objs: update_objects([], 1, 80, 2, numbers),
-          max: 80,
-          dist: 2,
+          max: maxSegments,
+          dist: segmentLength,
           numbers: numbers};
 }
 
@@ -42,16 +45,11 @@ function render({canvas: c,
   let angle = 0;
   let rotateAngle = 0;
 
-  let colorNumbers = [255, Math.max(0, (count - 128) % 255), count % 255];
-console.log(`colorNumbers: ${colorNumbers}`);
-  ctx.strokeStyle = rgb_color(colorNumbers);
-  //ctx.strokeStyle = "#FFFF90";
-console.log(`count: ${count}`);
-  console.log("ctx.strokeStyle: " + ctx.strokeStyle);
-
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(0, 0);
   for(obj of objs){
+    ctx.strokeStyle = obj.color;
     out("t9", "obj.a: " + obj.a);
 
     angle = Math.min(Math.PI * 2, obj.a);
@@ -63,8 +61,8 @@ console.log(`count: ${count}`);
     //console.log(`obj.a: ${obj.a}, angle: ${angle}, obj.x: ${obj.x}, obj.y: ${obj.y}, dx: ${dx}, dy: ${dy}, totalX: ${totalX}, totalY: ${totalY}`);
     out("t7", "totalX: " + totalX + ", totalY: " + totalY);
     ctx.lineTo(totalX, totalY);
+    ctx.stroke();
   }
-  ctx.stroke();
 
   rotateAngle = 2 * Math.PI / 64;
   ctx.rotate(rotateAngle);
@@ -73,6 +71,12 @@ console.log(`count: ${count}`);
 }
 
 function update_objects(objs, count, max, dist, numbers){
+  let red = Math.abs((count * -10) % 255);
+  let green = Math.abs((count * 5 - 128) % 255);
+  let blue = Math.abs((count * 10) % 255);
+  let colorNumbers = [red, green, ];
+  let color = rgb_color(colorNumbers);
+
   let angle = numbers[count % numbers.length];
   let strategies = [-angle, 0, angle];
   let newestObjs;
@@ -115,7 +119,8 @@ function update_objects(objs, count, max, dist, numbers){
                    x: dx, y: dy,
                    a: newAngle,
                    strategy: strategy,
-                   da: last.da});
+                   da: last.da,
+                   color: color});
   return newestObjs.slice(0);
 }
 
