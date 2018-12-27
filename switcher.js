@@ -17,7 +17,8 @@ const scripts = ["b.js",
                  "o2.js",
                  "o3.js",
                  "o4.js",
-                 "p.js"];
+                 "p.js",
+                 "r.js"];
 
 let currentScript;
 let isAnimationCancelled = false;
