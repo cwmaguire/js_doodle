@@ -19,6 +19,12 @@
         position: fixed;
         border: 1px solid red;
       }
+      #controls{
+        position: fixed;
+        top: 40px;
+        left: 830px;
+        border: 1px solid orange;
+      }
     </style>
   </head>
   <body onload="jsDoodle.save_canvas_states(); load_scripts();">
@@ -54,6 +60,10 @@
     <p id="results" style="width:400px; height:200px;"></p>
 
     <canvas id="canvas2" width=500 height=400></canvas>
+
+    <span id="controls">
+      <!-- filled in with code by animations -->
+    </span>
 
     <script>test();</script>
   </body>

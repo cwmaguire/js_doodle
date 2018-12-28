@@ -42,6 +42,7 @@ function change_script(event){
   if(currentScript){
     currentScript.remove();
   }
+  clear_controls();
   load_script(value);
 }
 
@@ -74,4 +75,14 @@ function run_current_script(){
     //}
   }
   animation.animate(initState, render, frameLimit, shouldClear);
+}
+
+function clear_controls(){
+  let span = elem('controls');
+  // remove in reverse order because this is a live collection
+  // and the indices will update as we remove children
+  for(let i = span.children.length - 1; i >= 0; i--){
+    let child = span.children[i];
+    child.remove();
+  }
 }

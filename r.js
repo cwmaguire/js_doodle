@@ -1,5 +1,8 @@
 "use strict";
 
+let MIN_HEIGHT = 100;
+let RADIUS = 5;
+
 function scriptDesc(){
   return 'falling fireworks';
 }
@@ -16,13 +19,15 @@ function init(){
   let w = c.width;
   let fireworks = [];
 
+  add_controls(w, h);
+
   return {h: h, w: w, frame: 0, fireworks: fireworks};
 }
 
 function render({context: ctx, state: {h, w, frame, fireworks}}){
   let maxFireworks = 60;
   let minFramesBetweenFireworks = 1;
-  let maxFireworkAge = 60;
+  let maxFireworkAge = 30;
   let dy = 2;
 
   // we create falling fireworks that are bright at the head then fade to the tail.
@@ -62,7 +67,7 @@ function render({context: ctx, state: {h, w, frame, fireworks}}){
       //console.log(`r: ${r}, g: ${g}, b: ${b}`);
       firework.base_color = [r, g, b];
     }
-    let trail = create_trail(r, g, b);
+    let trail = create_trail(r, g, b, age);
     firework.trail = trail;
     firework.y += dy;
     render_firework(ctx, firework, age);
@@ -73,7 +78,7 @@ function render({context: ctx, state: {h, w, frame, fireworks}}){
 
 function create_firework(h, w, frame){
   let x = Math.random() * w;
-  let y = Math.random() * (h - 200);
+  let y = Math.random() * (h - get_control_value('min_height', 'int'));
   let r = 255 - Math.floor(Math.random() * 50);
   let g = 255 - Math.floor(Math.random() * 50);
   let b = 255 - Math.floor(Math.random() * 50);
@@ -86,18 +91,21 @@ function dim_colors([r, g, b], dimAmount = 5){
           Math.max(0, b - dimAmount)]
 }
 
-function create_trail(r, g, b){
-  let dimAmount = 20;
+function create_trail(r, g, b, age){
+  let dimAmount = 10;
   let trail = [[r, g, b]];
-  while(r > 0 || g > 0 || b > 0){
+  let maxTrail = Math.floor(age / 3);
+  let i = 0;
+  while(i < maxTrail && (r > 0 || g > 0 || b > 0)){
     [r, g, b] = dim_colors([r, g, b], dimAmount);
     trail.push([r, g, b]);
+    i++;
   }
   return trail;
 }
 
 function render_firework(ctx, {trail, y, x}, age = ''){
-  let radius = 5.0;
+  let radius = get_control_value('radius', 'int');
   let effectiveRadius;
   let dy = 5;
   let y2 = y;
@@ -130,4 +138,49 @@ function round(number, decimalPlaces){
   let multiplier = Math.pow(10, decimalPlaces);
   let rounded = Math.round(multiplier * number) / multiplier;
   return rounded;
+}
+
+function get_control_value(controlName, type){
+  let e = elem(controlName);
+  let value = cast(e.value, type);
+  return value;
+}
+
+function add_controls(w, h){
+  let controlSpan = elem('controls');
+
+  let minHeightSlider = document.createElement('INPUT');
+  minHeightSlider.type = 'range';
+  minHeightSlider.id = 'min_height';
+  minHeightSlider.name = 'min_height';
+  minHeightSlider.value = MIN_HEIGHT;
+  minHeightSlider.min = '0';
+  minHeightSlider.max = h;
+  minHeightSlider.step = 10;
+
+  let minHeightLabel = document.createElement('LABEL');
+  minHeightLabel.id = 'min_height_label';
+  minHeightLabel.innerText = 'Min Height';
+  minHeightLabel.for = 'min_height';
+
+  controlSpan.appendChild(minHeightSlider);
+  controlSpan.appendChild(minHeightLabel);
+  controlSpan.appendChild(document.createElement('BR'));
+
+  let radiusSlider = document.createElement('INPUT');
+  radiusSlider.type = 'range';
+  radiusSlider.id = 'radius';
+  radiusSlider.name = 'radius';
+  radiusSlider.value = RADIUS;
+  radiusSlider.min = '0';
+  radiusSlider.max = w;
+  radiusSlider.step = 1;
+
+  let radiusLabel = document.createElement('LABEL');
+  radiusLabel.id = 'radius_label';
+  radiusLabel.innerText = 'Firework Radius';
+  radiusLabel.for = 'radius';
+
+  controlSpan.appendChild(radiusSlider);
+  controlSpan.appendChild(radiusLabel);
 }
