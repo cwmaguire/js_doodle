@@ -9,6 +9,13 @@ let BLUE_BASE = 255;
 let RED_RANGE = 50;
 let GREEN_RANGE = 50;
 let BLUE_RANGE = 50;
+let MAX_AGE = 30;
+let MAX_FIREWORKS = 30;
+let GRADIENT_RADIUS_1 = 0;
+let GRADIENT_COLOR_STOP_1 = 0;
+let GRADIENT_COLOR_STOP_2 = 0.5;
+let GRADIENT_X_OFFSET = 0;
+let GRADIENT_Y_OFFSET = 0;
 
 function scriptDesc(){
   return 'falling fireworks';
@@ -32,9 +39,9 @@ function init(){
 }
 
 function render({context: ctx, state: {h, w, frame, fireworks}}){
-  let maxFireworks = 60;
-  let minFramesBetweenFireworks = 1;
-  let maxFireworkAge = 30;
+  let maxFireworks = get_control_value('max_fireworks', 'int');;
+  let minFramesBetweenFireworks = 0;
+  let maxFireworkAge = get_control_value('max_age', 'int');
   let dy = 2;
 
   // we create falling fireworks that are bright at the head then fade to the tail.
@@ -58,7 +65,8 @@ function render({context: ctx, state: {h, w, frame, fireworks}}){
   fireworks = fireworks.filter(isNotBlack);
 
   // Every X frames create a new firework if we don't have enough
-  if(fireworks.length < maxFireworks && frame % minFramesBetweenFireworks == 0){
+  if(fireworks.length < maxFireworks &&
+     (minFramesBetweenFireworks == 0 || frame % minFramesBetweenFireworks == 0)){
     let newFirework = create_firework(h, w, frame);
     fireworks.push(newFirework);
   }
@@ -128,13 +136,36 @@ function render_firework(ctx, {trail, y, x}, age = ''){
   let dy = 5;
   let y2 = y;
   let rgbColor;
+
+  // Set the fill style and draw a rectangle
+  ctx.fillStyle = gradient;
+  //ctx.fillRect(20, 20, 160, 160);
+
+
   for(let colors of trail){
     radius = round(radius - 0.1, 3);
     effectiveRadius = round(Math.max(1, Math.floor(radius)), 3);
     y2 -= dy;
     //rgbColor = rgb_color(colors);
     //console.log(`rgbColor: ${rgbColor}`);
-    ctx.fillStyle = rgb_color(colors);
+    //ctx.fillStyle = rgb_color(colors);
+    let gradientRadius1 = get_control_value('gradient_radius_1', 'float');
+    let gradientXOffset = get_control_value('gradient_x_offset', 'int');
+    let gradientYOffset = get_control_value('gradient_y_offset', 'int');
+    let gradient = ctx.createRadialGradient(
+      x + gradientXOffset,
+      y2 + gradientYOffset,
+      gradientRadius1,
+      x,
+      y2,
+      effectiveRadius);
+    // I think color stops specify where the transition begins and ends
+    let colorStop1 = get_control_value('gradient_color_stop_1', 'float');
+    let colorStop2 = get_control_value('gradient_color_stop_2', 'float');
+    gradient.addColorStop(colorStop1, rgb_color(colors));
+    gradient.addColorStop(colorStop2, 'black');
+    ctx.fillStyle = gradient;
+
     ctx.beginPath();
     ctx.ellipse(x, y2, effectiveRadius, effectiveRadius, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -174,6 +205,13 @@ function add_controls(w, h){
   add_slider('red_range', '0', '255', '1', RED_RANGE);
   add_slider('green_range', '0', '255', '1', GREEN_RANGE);
   add_slider('blue_range', '0', '255', '1', BLUE_RANGE);
+  add_slider('max_age', '0', '100', '1', MAX_AGE);
+  add_slider('max_fireworks', '0', '200', '1', MAX_FIREWORKS);
+  add_slider('gradient_radius_1', '0', 'w', '1', GRADIENT_RADIUS_1);
+  add_slider('gradient_color_stop_1', '0.0', '1.0', '.05', GRADIENT_COLOR_STOP_1);
+  add_slider('gradient_color_stop_2', '0.0', '1.0', '.05', GRADIENT_COLOR_STOP_2);
+  add_slider('gradient_x_offset', '-50', '50', '1', GRADIENT_X_OFFSET);
+  add_slider('gradient_y_offset', '-50', '50', '1', GRADIENT_Y_OFFSET);
 }
 
 function add_slider(name, min, max, step, value){
