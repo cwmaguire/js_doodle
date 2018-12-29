@@ -2,6 +2,13 @@
 
 let MIN_HEIGHT = 100;
 let RADIUS = 5;
+let DIM = 10;
+let RED_BASE = 255;
+let GREEN_BASE = 255;
+let BLUE_BASE = 255;
+let RED_RANGE = 50;
+let GREEN_RANGE = 50;
+let BLUE_RANGE = 50;
 
 function scriptDesc(){
   return 'falling fireworks';
@@ -79,9 +86,20 @@ function render({context: ctx, state: {h, w, frame, fireworks}}){
 function create_firework(h, w, frame){
   let x = Math.random() * w;
   let y = Math.random() * (h - get_control_value('min_height', 'int'));
-  let r = 255 - Math.floor(Math.random() * 50);
-  let g = 255 - Math.floor(Math.random() * 50);
-  let b = 255 - Math.floor(Math.random() * 50);
+  let redBase = get_control_value('red_base', 'int');
+  let greenBase = get_control_value('green_base', 'int');
+  let blueBase = get_control_value('blue_base', 'int');
+  //console.log(`redBase: ${redBase}, greenBase: ${greenBase}, blueBase: ${blueBase}`);
+
+  let redRange = get_control_value('red_range', 'int');
+  let greenRange = get_control_value('green_range', 'int');
+  let blueRange = get_control_value('blue_range', 'int');
+  //console.log(`redRange: ${redRange},  greenRange: ${greenRange}, blueRange: ${blueRange}`);
+
+  let r = redBase - Math.min(redBase, Math.floor(Math.random() * redRange));
+  let g = greenBase - Math.min(greenBase, Math.floor(Math.random() * greenRange));
+  let b = blueBase - Math.min(blueBase, Math.floor(Math.random() * blueRange));
+  //console.log(`r: ${r}, g: ${g}, b: ${b}`);
   return {x: x, y: y, base_color: [r, g, b], frame: frame};
 }
 
@@ -92,7 +110,7 @@ function dim_colors([r, g, b], dimAmount = 5){
 }
 
 function create_trail(r, g, b, age){
-  let dimAmount = 10;
+  let dimAmount = get_control_value('dim', 'int');
   let trail = [[r, g, b]];
   let maxTrail = Math.floor(age / 3);
   let i = 0;
@@ -147,40 +165,34 @@ function get_control_value(controlName, type){
 }
 
 function add_controls(w, h){
+  add_slider('min_height', '0', h, '10', MIN_HEIGHT);
+  add_slider('radius', '0', w, '1', RADIUS);
+  add_slider('dim', '0', '255', '1', DIM);
+  add_slider('red_base', '0', '255', '1', RED_BASE);
+  add_slider('green_base', '0', '255', '1', GREEN_BASE);
+  add_slider('blue_base', '0', '255', '1', BLUE_BASE);
+  add_slider('red_range', '0', '255', '1', RED_RANGE);
+  add_slider('green_range', '0', '255', '1', GREEN_RANGE);
+  add_slider('blue_range', '0', '255', '1', BLUE_RANGE);
+}
+
+function add_slider(name, min, max, step, value){
   let controlSpan = elem('controls');
+  let slider = document.createElement('INPUT');
+  slider.type = 'range';
+  slider.id = name;
+  slider.name = name;
+  slider.value = value;
+  slider.min = min;
+  slider.max = max;
+  slider.step = step;
 
-  let minHeightSlider = document.createElement('INPUT');
-  minHeightSlider.type = 'range';
-  minHeightSlider.id = 'min_height';
-  minHeightSlider.name = 'min_height';
-  minHeightSlider.value = MIN_HEIGHT;
-  minHeightSlider.min = '0';
-  minHeightSlider.max = h;
-  minHeightSlider.step = 10;
+  let label = document.createElement('LABEL');
+  label.id = name + '_label';
+  label.innerText = name;
+  label.for = name;
 
-  let minHeightLabel = document.createElement('LABEL');
-  minHeightLabel.id = 'min_height_label';
-  minHeightLabel.innerText = 'Min Height';
-  minHeightLabel.for = 'min_height';
-
-  controlSpan.appendChild(minHeightSlider);
-  controlSpan.appendChild(minHeightLabel);
+  controlSpan.appendChild(slider);
+  controlSpan.appendChild(label);
   controlSpan.appendChild(document.createElement('BR'));
-
-  let radiusSlider = document.createElement('INPUT');
-  radiusSlider.type = 'range';
-  radiusSlider.id = 'radius';
-  radiusSlider.name = 'radius';
-  radiusSlider.value = RADIUS;
-  radiusSlider.min = '0';
-  radiusSlider.max = w;
-  radiusSlider.step = 1;
-
-  let radiusLabel = document.createElement('LABEL');
-  radiusLabel.id = 'radius_label';
-  radiusLabel.innerText = 'Firework Radius';
-  radiusLabel.for = 'radius';
-
-  controlSpan.appendChild(radiusSlider);
-  controlSpan.appendChild(radiusLabel);
 }
