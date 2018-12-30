@@ -205,12 +205,6 @@ function round(number, decimalPlaces){
   return rounded;
 }
 
-function get_control_value(controlName, type){
-  let e = elem(controlName);
-  let value = cast(e.value, type);
-  return value;
-}
-
 function add_controls(w, h){
   add_slider('min_height', '0', h, '10', MIN_HEIGHT);
   add_slider('radius', '0', Math.floor(w / 4), '1', RADIUS);
@@ -255,7 +249,6 @@ function add_slider(name, min, max, step, value){
   text.name = name + '_text';
   let sliderOnchange =
     function(event){
-      console.log(`event: ${event}`);
       text.value = event.target.value;
     };
   slider.addEventListener('change', sliderOnchange);
