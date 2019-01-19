@@ -2,9 +2,9 @@
 <head>
 <script language="javascript">
   function load(){
-    for(let i = 0; i < 400; i++){
-      let left = i % 20;
-      let top = Math.floor(i / 20);
+    for(let i = 0; i < 800; i++){
+      let left = i % 40;
+      let top = Math.floor(i / 40);
       let c = document.createElement('CANVAS');
       document.body.appendChild(c);
       c.style.position = 'absolute';
@@ -20,7 +20,7 @@
 
       ctx.strokeStyle = 'pink';
       ctx.beginPath();
-      ctx.ellipse(10, 10, 7, 5, Math.PI / 3, 0, Math.PI * 2);
+      ctx.ellipse(10, 10, 7, 5, Math.PI / 10 * top, 0, Math.PI * 2);
       ctx.stroke();
     }
   }
