@@ -1,0 +1,32 @@
+<html>
+<head>
+<script language="javascript">
+  function load(){
+    for(let i = 0; i < 400; i++){
+      let left = i % 20;
+      let top = Math.floor(i / 20);
+      let c = document.createElement('CANVAS');
+      document.body.appendChild(c);
+      c.style.position = 'absolute';
+      c.style.height = 20;
+      c.style.width = 20;
+      c.height = 20;
+      c.width = 20;
+      c.style.top = top * 20 + 'px';
+      c.style.left = left * 20 + 'px';
+      let ctx = c.getContext('2d');
+      ctx.fillStyle = 'black';
+      ctx.fillRect(1, 1, 18, 18);
+
+      ctx.strokeStyle = 'pink';
+      ctx.beginPath();
+      ctx.ellipse(10, 10, 7, 5, Math.PI / 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+</script>
+</head>
+<body onload="load();">
+
+</body>
+</html>
