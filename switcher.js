@@ -19,7 +19,8 @@ const scripts = ["b.js",
                  "o4.js",
                  "p.js",
                  "r.js",
-                 "fill_with_squares.js"];
+                 "fill_with_squares.js",
+                 "fill_with_squares_2.js"];
 
 let currentScript;
 let isAnimationCancelled = false;
