@@ -67,6 +67,7 @@ function load_script(script){
 }
 
 function run_current_script(){
+  let fps = cast(elem('fps').value, 'int');
   let frameLimit = cast(elem('frameLimit').value, 'int');
   let shouldClear = window['should_clear'] && should_clear();
   let initState = {};
@@ -76,7 +77,7 @@ function run_current_script(){
       //console.log(`run_current_script: initState[${p}]: ${initState[p]}`);
     //}
   }
-  animation.animate(initState, render, frameLimit, shouldClear);
+  animation.animate(initState, render, frameLimit, fps, shouldClear);
 }
 
 function clear_controls(){
