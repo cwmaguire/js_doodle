@@ -271,22 +271,6 @@ function group_numbers(fun, count, numCols){
   return columns;
 }
 
-function average_numbers(fun, count, numCols){
-  let nums = fun(count);
-  let numsToAvg = parseInt(count / numCols);
-  let numbers = [];
-
-  for(let i = 0, j = 0; i < nums.length; i += numsToAvg, j += 1){
-    let sum = 0;
-    for(let k = i; k < i + numsToAvg; k++){
-      sum += nums[k];
-    }
-    numbers[j] = sum / numCols;
-  }
-  console.log(`numbers: ${numbers}`);
-  return numbers;
-}
-
 function graph_distribution(fun, count = 10000){
   let c = elem('canvas1');
   let ctx = c.getContext('2d');
@@ -370,4 +354,9 @@ function numbers(){
   let functionList = elem('functionList');
   let fun = generators[functionList.value] || generators['sin'];
   graph_numbers(fun, 700);
+}
+
+function clear_function_dropdown(){
+  let functionList = elem('functionList');
+  functionList.value = '';
 }
