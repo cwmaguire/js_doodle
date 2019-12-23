@@ -20,7 +20,8 @@ const scripts = ["b.js",
                  "p.js",
                  "r.js",
                  "fill_with_squares.js",
-                 "fill_with_squares_2.js"];
+                 "fill_with_squares_2.js",
+                 "graph.js"];
 
 let currentScript;
 let isAnimationCancelled = false;
