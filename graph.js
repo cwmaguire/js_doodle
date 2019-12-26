@@ -1,24 +1,10 @@
 "use strict";
 
-let MIN_HEIGHT = 100;
-let RADIUS = 10;
-let RADIUS_STEP = '0.1';
-let DIM = 10;
-let RED_BASE = 255;
-let GREEN_BASE = 255;
-let BLUE_BASE = 255;
-let RED_RANGE = 50;
-let GREEN_RANGE = 50;
-let BLUE_RANGE = 50;
-let MAX_AGE = 30;
-let MAX_FIREWORKS = 30;
-let GRADIENT_RADIUS_1 = 0;
-let GRADIENT_COLOR_STOP_1 = 0;
-let GRADIENT_COLOR_STOP_2 = 0.5;
-let GRADIENT_X_OFFSET = 0;
-let GRADIENT_Y_OFFSET = 0;
-let DELTA_Y = 2;
-let DELTA_Y_TRAIL = 5;
+let DUMMY_VALUE = 30;
+let GRAPH = [{'id': 1, 'edges': [2, 3, 4]},
+             {'id': 2, 'edges': []},
+             {'id': 3, 'edges': [1, 4]},
+             {'id': 4, 'edges': [1, 3]}]
 
 function scriptDesc(){
   return 'Draw a graph';
@@ -38,44 +24,32 @@ function init(){
 
   add_controls(w, h);
 
-  verteces = generate_vertexes(h, w);
+  let index = 0;
+  shapes = arrange_shapes(GRAPH, index, []);
 
-  return {h: h, w: w, frame: 0, verteces: verteces, edges: edges};
+  return {h: h, w: w, frame: frame + 1, shapes: shapes};
 }
 
-function render({context: ctx, state: {h, w, frame, verteces, edges}}){
-  let maxFireworks = get_control_value('max_fireworks', 'int');;
+function render({context: ctx, state: {h, w, frame, shapes}}){
+  let foo = get_control_value('max_fireworks', 'int');;
+  let shapes = []
 
-  return {h: h, w: w, frame: frame + 1, fireworks: fireworks};
-}
 
-function create_firework(h, w, frame){
-  //console.log(`r: ${r}, g: ${g}, b: ${b}`);
-  return {x: x, y: y, base_color: [r, g, b], frame: frame};
-}
-
-function dim_colors([r, g, b], dimAmount = 5){
-  return [Math.max(0, r - dimAmount),
-          Math.max(0, g - dimAmount),
-          Math.max(0, b - dimAmount)]
-}
-
-function create_trail(r, g, b, age){
-  let dimAmount = get_control_value('dim', 'int');
-  //let trail = [[r, g, b]];
-  let head = [r, g, b];
-  let trail = [];
-  let maxTrail = Math.floor(age / 3);
-  let i = 0;
-  while(i < maxTrail && (r > 0 || g > 0 || b > 0)){
-    [r, g, b] = dim_colors([r, g, b], dimAmount);
-    //trail.unshift([r, g, b]);
-    trail.push([r, g, b]);
-    i++;
+function arrange_shapes(graph, arranged, index, shapes, x, y, angle){
+  let id = graph['index']['id']
+  if(index >= graph.length || arranged.includes(id)){
+    return shapes;
   }
-  // Draw this last so it's not covered by the tail
-  trail.push(head);
-  return trail;
+
+  let vertex = {'type': 'vertex', 'x': x, 'y': y};
+  shapes.push(vertex);
+  edges = graph[index]['edges'];
+  dAngle = 2 * Math.PI / (edges.length + 1);
+  for(let i = 1; i <= edges.length; i++){
+    shapes.push(arrange_edge(x, y, angle + (dAngle * i)));
+  }
+  return arrange_shapes(shapes.slice(0));
+
 }
 
 function render_firework(ctx, {trail, y, x}, age = ''){
