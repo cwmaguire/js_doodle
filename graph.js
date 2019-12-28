@@ -24,19 +24,25 @@ function init(){
 
   add_controls(w, h);
 
-  let index = 0;
-  shapes = arrange_shapes(GRAPH, index, []);
+  let firstIndex = 0;
+  let shapes = [];
+  let x = 200;
+  let y = 200;
+  let nullStartingAngle = undefined;
+  shapes = arrange_shapes(GRAPH, firstIndex, shapes, x, y, nullStartingAngle);
 
   return {h: h, w: w, frame: frame + 1, shapes: shapes};
 }
 
 function render({context: ctx, state: {h, w, frame, shapes}}){
   let foo = get_control_value('max_fireworks', 'int');;
-  let shapes = []
-
+  for(shape of shapes){
+    draw_shape(shape);
+  }
 
 function arrange_shapes(graph, arranged, index, shapes, x, y, angle){
-  let id = graph['index']['id']
+  let dAngle = 0;
+  let id = graph[index]['id']
   if(index >= graph.length || arranged.includes(id)){
     return shapes;
   }
@@ -44,7 +50,13 @@ function arrange_shapes(graph, arranged, index, shapes, x, y, angle){
   let vertex = {'type': 'vertex', 'x': x, 'y': y};
   shapes.push(vertex);
   edges = graph[index]['edges'];
-  dAngle = 2 * Math.PI / (edges.length + 1);
+  numParentEdges = angle === undefined ? 0 : 1;
+  numChild = edges.length - numParentEdges;
+  numEdges = numParentEdges + numChildEdges;
+
+  if(numEdges > 0){
+    dAngle = 2 * Math.PI / (numEdges);
+  }
   for(let i = 1; i <= edges.length; i++){
     shapes.push(arrange_edge(x, y, angle + (dAngle * i)));
   }
