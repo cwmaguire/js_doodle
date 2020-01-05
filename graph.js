@@ -202,9 +202,6 @@ function unique_edges(graph){
   return uniqueEdges;
 }
 
-function render_firework(ctx, {trail, y, x}, age = ''){
-}
-
 function is_black([r, g, b]){
   return r == 0 && g == 0 && b == 0;
 }
