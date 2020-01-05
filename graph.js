@@ -87,6 +87,7 @@ function arrange_shapes(graph,
   // angle between child edges
   console.log('Previous ID = ' + previousId);
   const siblingIds = Array.from(new Set(graph[previousId]['edges']));
+  const edges = edge_ids(previousId, siblingIds);
   const unarrangedEdges = set_minus(siblingIds, arrangedEdgeIds);
   //const numArrangedEdges = isRootVertex ? 1 : 0;
   //const numChildEdges = edgeIds.size - numParentEdges;
@@ -179,6 +180,14 @@ function edge_shape(x, y, angle){
           y1: y,
           x2: x + dx,
           y2: y + dy};
+}
+
+function edge_ids(fromId, toIds){
+  let edgeIds = [];
+  for(let toId of toIds){
+    edgeIds.push('${fromId}-${toId}');
+  }
+  return edgeIds;
 }
 
 function unique_edges(graph){
