@@ -101,8 +101,19 @@ function arrange_shapes(graph,
             arranged_edge_ids: new Set(arrangedEdgeIds),
             arranged_vertex_ids: new Set(arrangedVertexIds)};
   }
-  for(let i = 1; i <= edges.length; i++){
-    shapes.push(arrange_edge(x, y, angle + (dAngle * i)));
+  const numArrangedEdges = numEdges - unarrangedEdges.size;
+
+  // draw undrawn child edges and undrawn child verteces
+  // (an drawn vertex might not have a connected edge:
+  //       a
+  //      / \
+  //     b--c
+  //  if we draw a--b, then b--c we still need a--c)
+  let newShapes;
+  let _arrangedEdgeIds = new Set(arrangedEdgeIds);
+  let _arrangedVertexIds = new Set(arrangedVertexIds);
+  const paddingAngle = numArrangedEdges * dAngle;
+
   }
   return arrange_shapes(shapes.slice(0));
 
