@@ -114,9 +114,83 @@ function arrange_shapes(graph,
   let _arrangedVertexIds = new Set(arrangedVertexIds);
   const paddingAngle = numArrangedEdges * dAngle;
 
+  for(let i = 0; i < siblingIds.length; i++){
+  //for(const siblingId of siblingIds){
+    // we might need to draw the vertex even if we don't
+    // need to draw the edge
+    // (see example above)
+    let siblingId = siblingIds[i];
+    let edgeShape = edge_shape(x, y, paddingAngle + (dAngle * i));
+
+    // do we need to draw the edge?
+    if(!_arrangedEdgeIds.has(siblingId)){
+      shapes.push(edgeShape);
+      _arrangedEdgeIds.push(siblingId);
+    }
+
+    // do we need to draw the vertex?
+    if(!_arrangedVertexIds.has(siblingId)){
+      let vertex_ = vertex(edge_.x2, edge_.y2);
+      shapes.push(vertex_);
+      arrangedVerteces.push(vertex_);
+    }
+
+    // return the new shapes and arranged verteces and edges
+    ({shapes: newShapes,
+      arranged_edge_ids: recursiveArrangedEdgeIds,
+      arranged_vertex_ids: recursiveArrangedVertexIds} =
+        arrange_shapes(graph,
+                       uniqueEdges,
+                       id,
+                       _arrangedEdgeIds,
+                       _arrangedVertexIds,
+                       shapes,
+                       vertex_.x,
+                       vertex_.y,
+                       angle));
+
+    // each loop add all the recursive edges and verteces
+
+    shapes = shapes.concat(newShapes);
+    _arrangedEdgeIds = set_union(_arrangedEdgeIds, recursiveArrangedEdgeIds);
+    _arrangedVertexIds = set_union(_arrangedVertexIds, recursiveArrangedVertexIds);
   }
   return arrange_shapes(shapes.slice(0));
 
+  console.log('newShapes: ' + newShapes);
+
+  return {shapes: shapes,
+          arranged_edge_ids: new Set(arrangedEdgeIds),
+          arranged_vertex_ids: new Set(arrangedVertexIds)}
+}
+
+function vertex_shape(x, y){
+  return {type: 'vertex',
+          x: x,
+          y: y};
+}
+
+function edge_shape(x, y, angle){
+  let edgeLength = elem('edge_length_text').value;
+  let dx = Math.cos(angle) * edgeLength;
+  let dy = Math.sin(angle) * edgeLength;
+  return {type: 'edge',
+          x1: x,
+          y1: y,
+          x2: x + dx,
+          y2: y + dy};
+}
+
+function unique_edges(graph){
+  let uniqueEdges = new Set([]);
+  for(const vertex in graph){
+    for(const edge of graph[vertex]['edges']){
+      const vertex1 = Math.min(vertex, edge);
+      const vertex2 = Math.max(vertex, edge);
+      uniqueEdges.add('' + vertex1 + '-' + vertex2);
+    }
+  }
+  return uniqueEdges;
 }
 
 function render_firework(ctx, {trail, y, x}, age = ''){
