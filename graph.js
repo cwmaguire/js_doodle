@@ -57,6 +57,8 @@ function render({context: ctx, state: {h, w, frame, shapes}}){
   for(shape of shapes){
     draw_shape(shape);
   }
+  return {h: h, w: w, frame: frame, shapes: shapes};
+}
 
 function arrange_shapes(graph,
                         shapes,
