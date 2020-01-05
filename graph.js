@@ -78,7 +78,7 @@ function arrange_shapes(graph,
   const areAllEdgesArranged = arrangedEdgeIds.size >= numUniqueEdges;
   const areAllVertecesArranged = arrangedVertexIds.size >= numUniqueVerteces;
   const isGraphArranged = areAllEdgesArranged && areAllVertecesArranged;
-  if(isGraphArranged || arrangedEdgeIds.includes(previousId)){
+  if(isGraphArranged){
     return {shapes: shapes.slice(0),
             arranged_edge_ids: new Set(arrangedEdgeIds),
             arranged_vertex_ids: new Set(arrangedVertexIds)};
