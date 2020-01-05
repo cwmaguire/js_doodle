@@ -96,6 +96,10 @@ function arrange_shapes(graph,
   // (other than the incoming parent edge)
   if(numEdges > 0){
     dAngle = 2 * Math.PI / (numEdges);
+  }else{
+    return {shapes: shapes.slice(0),
+            arranged_edge_ids: new Set(arrangedEdgeIds),
+            arranged_vertex_ids: new Set(arrangedVertexIds)};
   }
   for(let i = 1; i <= edges.length; i++){
     shapes.push(arrange_edge(x, y, angle + (dAngle * i)));
