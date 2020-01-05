@@ -3,8 +3,10 @@
 let VERTEX_RADIUS = 10;
 let EDGE_LENGTH = 10;
 
-             {'id': 3, 'edges': [1, 4]},
-             {'id': 4, 'edges': [1, 3]}]
+let GRAPH = {1: {'edges': [2, 3, 4]},
+             2: {'edges': []},
+             3: {'edges': [1, 4]},
+             4: {'edges': [1, 3]}}
 
 function scriptDesc(){
   return 'Draw a graph';
