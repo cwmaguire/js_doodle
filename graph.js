@@ -53,7 +53,6 @@ function init(){
 }
 
 function render({context: ctx, state: {h, w, frame, shapes}}){
-  let foo = get_control_value('max_fireworks', 'int');;
   for(shape of shapes){
     draw_shape(shape);
   }
