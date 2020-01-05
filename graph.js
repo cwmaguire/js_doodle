@@ -1,8 +1,8 @@
 "use strict";
 
-let DUMMY_VALUE = 30;
-let GRAPH = [{'id': 1, 'edges': [2, 3, 4]},
-             {'id': 2, 'edges': []},
+let VERTEX_RADIUS = 10;
+let EDGE_LENGTH = 10;
+
              {'id': 3, 'edges': [1, 4]},
              {'id': 4, 'edges': [1, 3]}]
 
