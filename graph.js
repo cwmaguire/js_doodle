@@ -41,20 +41,18 @@ function init(){
   let x = 200;
   let y = 200;
   let nullStartingAngle = undefined;
-  let firstVertex = vertex(x, y);
+  let firstVertex = vertex_shape(x, y);
   let initialShapes = [firstVertex];
   let firstId = parseInt(Object.keys(GRAPH)[0]);
   let arrangedEdgeIds = [];
   let arrangedVertexIds = [firstId];
   let uniqueEdges = unique_edges(GRAPH);
-  let shapes = [];
   let arrangement = arrange_shapes(GRAPH,
-                                   shapes,
+                                   initialShapes,
                                    uniqueEdges,
                                    firstId,
                                    arrangedEdgeIds,
                                    arrangedVertexIds,
-                                   initialShapes,
                                    x,
                                    y,
                                    nullStartingAngle);
@@ -64,7 +62,8 @@ function init(){
 }
 
 function render({context: ctx, state: {h, w, frame, shapes}}){
-  for(shape of shapes){
+  console.log(`render shapes: ${shapes}`);
+  for(let shape of shapes){
     draw_shape(shape);
   }
   return {h: h, w: w, frame: frame, shapes: shapes};
@@ -80,40 +79,37 @@ function arrange_shapes(graph,
                         previousY,
                         angle){
 
-  // Recursive termination test
-  // Have we drawn all the edges AND all the verteces
-  // (in a cyclic graph we could draw all the verteces
-  //  recursively but skip an edge)
+  let newArrangedShapes = arrangedShapes.slice(0);
   const numUniqueEdges = uniqueEdges.size;
   const numUniqueVerteces = (new Set(Object.keys(graph))).size;
   const areAllEdgesArranged = arrangedEdgeIds.size >= numUniqueEdges;
   const areAllVertecesArranged = arrangedVertexIds.size >= numUniqueVerteces;
+
+
   const isGraphArranged = areAllEdgesArranged && areAllVertecesArranged;
   if(isGraphArranged){
-    return {shapes: shapes.slice(0),
+    return {arranged_shapes: arrangedShapes.slice(0),
             arranged_edge_ids: new Set(arrangedEdgeIds),
             arranged_vertex_ids: new Set(arrangedVertexIds)};
   }
 
-  // angle between child edges
-  console.log('Previous ID = ' + previousId);
   const siblingIds = Array.from(new Set(graph[previousId]['edges']));
-  const edges = edge_ids(previousId, siblingIds);
-  const unarrangedEdges = set_minus(siblingIds, arrangedEdgeIds);
-  //const numArrangedEdges = isRootVertex ? 1 : 0;
-  //const numChildEdges = edgeIds.size - numParentEdges;
-  //const numEdges = numParentEdges + numChildEdges;
-  const numEdges = siblingIds.length;
+  const edgeIds = edge_ids(previousId, siblingIds);
+  const unarrangedEdges = set_minus(edgeIds, arrangedEdgeIds);
+  const numEdges = edgeIds.length;
   let dAngle = 0;
-  // do we have any edges?
-  // (other than the incoming parent edge)
-  if(numEdges > 0){
+  const hasEdgesToArrange = numEdges > 0;
+
+  console.log(`Arranging vertex ${previousId} with siblings ${siblingIds}`);
+
+  if(hasEdgesToArrange){
     dAngle = 2 * Math.PI / (numEdges);
   }else{
-    return {shapes: shapes.slice(0),
+    return {arranged_shapes: arrangedShapes.slice(0),
             arranged_edge_ids: new Set(arrangedEdgeIds),
             arranged_vertex_ids: new Set(arrangedVertexIds)};
   }
+
   const numArrangedEdges = numEdges - unarrangedEdges.size;
 
   // draw undrawn child edges and undrawn child verteces
@@ -122,56 +118,53 @@ function arrange_shapes(graph,
   //      / \
   //     b--c
   //  if we draw a--b, then b--c we still need a--c)
-  let newShapes;
   let _arrangedEdgeIds = new Set(arrangedEdgeIds);
   let _arrangedVertexIds = new Set(arrangedVertexIds);
   const paddingAngle = numArrangedEdges * dAngle;
 
   for(let i = 0; i < siblingIds.length; i++){
-  //for(const siblingId of siblingIds){
-    // we might need to draw the vertex even if we don't
-    // need to draw the edge
-    // (see example above)
-    let siblingId = siblingIds[i];
-    let edgeShape = edge_shape(x, y, paddingAngle + (dAngle * i));
+    const siblingId = siblingIds[i];
+    const edgeId = edge_id(previousId, siblingId);
+    const newAngle = paddingAngle + (dAngle * i);
+    const edgeShape = edge_shape(previousX, previousY, newAngle);
 
-    // do we need to draw the edge?
-    if(!_arrangedEdgeIds.has(siblingId)){
-      shapes.push(edgeShape);
-      _arrangedEdgeIds.push(siblingId);
+    const isEdgeArranged = _arrangedEdgeIds.has(edgeId);
+    const isVertexArranged = _arrangedVertexIds.has(siblingId)
+
+    if(isEdgeArranged && isVertexArranged){
+      return {arranged_shapes: arrangedShapes.slice(0),
+              arranged_edge_ids: new Set(arrangedEdgeIds),
+              arranged_vertex_ids: new Set(arrangedVertexIds)};
     }
 
-    // do we need to draw the vertex?
-    if(!_arrangedVertexIds.has(siblingId)){
-      let vertex_ = vertex(edge_.x2, edge_.y2);
-      shapes.push(vertex_);
-      arrangedVerteces.push(vertex_);
+    if(!isEdgeArranged){
+      newArrangedShapes.push(edgeShape);
+      _arrangedEdgeIds.add(edgeId);
     }
 
-    // return the new shapes and arranged verteces and edges
-    ({shapes: newShapes,
-      arranged_edge_ids: recursiveArrangedEdgeIds,
-      arranged_vertex_ids: recursiveArrangedVertexIds} =
-        arrange_shapes(graph,
-                       uniqueEdges,
-                       id,
-                       _arrangedEdgeIds,
-                       _arrangedVertexIds,
-                       shapes,
-                       vertex_.x,
-                       vertex_.y,
-                       angle));
+    let vertexShape = vertex_shape(edgeShape.x2, edgeShape.y2);
+    if(!isVertexArranged){
+      newArrangedShapes.push(vertexShape);
+      _arrangedVertexIds.add(siblingId);
+    }
 
-    // each loop add all the recursive edges and verteces
+    const arrangedSubGraph =
+      arrange_shapes(graph,
+                     arrangedShapes,
+                     uniqueEdges,
+                     siblingId,
+                     _arrangedEdgeIds,
+                     _arrangedVertexIds,
+                     vertexShape.x,
+                     vertexShape.y,
+                     newAngle);
 
-    shapes = shapes.concat(newShapes);
-    _arrangedEdgeIds = set_union(_arrangedEdgeIds, recursiveArrangedEdgeIds);
-    _arrangedVertexIds = set_union(_arrangedVertexIds, recursiveArrangedVertexIds);
+    newArrangedShapes = newArrangedShapes.concat(arrangedSubGraph.arranged_shapes);
+    _arrangedEdgeIds = set_union(_arrangedEdgeIds, arrangedSubGraph.arranged_edge_ids);
+    _arrangedVertexIds = set_union(_arrangedVertexIds, arrangedSubGraph.arranged_vertex_ids);
   }
 
-  console.log('newShapes: ' + newShapes);
-
-  return {shapes: shapes,
+  return {arranged_shapes: newArrangedShapes,
           arranged_edge_ids: new Set(arrangedEdgeIds),
           arranged_vertex_ids: new Set(arrangedVertexIds)}
 }
@@ -196,7 +189,7 @@ function edge_shape(x, y, angle){
 function edge_ids(fromId, toIds){
   let edgeIds = [];
   for(let toId of toIds){
-    edgeIds.push('${fromId}-${toId}');
+    edgeIds.push(edge_id(fromId, toId));
   }
   return edgeIds;
 }
