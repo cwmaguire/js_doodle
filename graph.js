@@ -1,7 +1,7 @@
 "use strict";
 
 let VERTEX_RADIUS = 10;
-let EDGE_LENGTH = 10;
+let EDGE_LENGTH = 50;
 
 /*
  *     2
@@ -56,7 +56,7 @@ function init(){
                                    x,
                                    y,
                                    nullStartingAngle);
-  shapes = arrangement.shapes;
+  const shapes = arrangement.arranged_shapes;
 
   return {h: h, w: w, frame: 1, shapes: shapes};
 }
@@ -64,13 +64,13 @@ function init(){
 function render({context: ctx, state: {h, w, frame, shapes}}){
   console.log(`render shapes: ${shapes}`);
   for(let shape of shapes){
-    draw_shape(shape);
+    draw_shape(ctx, shape);
   }
   return {h: h, w: w, frame: frame, shapes: shapes};
 }
 
 function arrange_shapes(graph,
-                        shapes,
+                        arrangedShapes,
                         uniqueEdges,
                         previousId,
                         arrangedEdgeIds,
@@ -176,9 +176,10 @@ function vertex_shape(x, y){
 }
 
 function edge_shape(x, y, angle){
-  let edgeLength = elem('edge_length_text').value;
+  let edgeLength = get_control_value('edge_length', 'int');
   let dx = Math.cos(angle) * edgeLength;
   let dy = Math.sin(angle) * edgeLength;
+  console.log(`edge_shape: edgeLength: ${edgeLength}, x1: ${x}, y2: ${y}, dx: ${dx}, dy: ${dy}, x2: ${x + dx}, y2: ${y + dy}`);
   return {type: 'edge',
           x1: x,
           y1: y,
@@ -259,6 +260,41 @@ function add_slider(name, min, max, step, value){
   controlSpan.appendChild(document.createElement('BR'));
 }
 
-function draw_shape(){
+function draw_shape(ctx, shape){
   console.log('draw_shape() called');
+  for(let prop in shape){
+    console.log(`shape.${prop}: ${shape[prop]}`);
+  }
+
+  if(shape.type == 'vertex'){
+    draw_vertex(ctx, shape);
+  }else if(shape.type == 'edge'){
+    draw_edge(ctx, shape);
+  }
+}
+
+function draw_vertex(ctx, vertex){
+  const radius = get_control_value('vertex_radius', 'int');
+  const rotation = 0;
+  const startAngle = 0;
+  const endAngle = Math.PI * 2;
+  const gradient = ctx.createLinearGradient(vertex.x - 20, vertex.y - 20, vertex.x + 20, vertex.y + 20);
+  gradient.addColorStop(0.0, 'green');
+  gradient.addColorStop(0.5, 'cyan');
+  gradient.addColorStop(1.0, 'green');
+
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.ellipse(vertex.x, vertex.y, radius, radius, rotation, startAngle, endAngle);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function draw_edge(ctx, edge){
+  ctx.strokeStyle = 'black';
+  ctx.beginPath();
+  ctx.moveTo(edge.x1, edge.y1);
+  ctx.lineTo(edge.x2, edge.y2);
+  ctx.closePath();
+  ctx.stroke();
 }
