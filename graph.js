@@ -207,7 +207,8 @@ function round(number, decimalPlaces){
 }
 
 function add_controls(w, h){
-  add_slider('min_height', '0', h, '10', MIN_HEIGHT);
+  add_slider('vertex_radius', '0', '100', '5', VERTEX_RADIUS);
+  add_slider('edge_length', '0', '200', '5', EDGE_LENGTH);
 }
 
 function add_slider(name, min, max, step, value){
