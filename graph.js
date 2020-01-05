@@ -156,7 +156,6 @@ function arrange_shapes(graph,
     _arrangedEdgeIds = set_union(_arrangedEdgeIds, recursiveArrangedEdgeIds);
     _arrangedVertexIds = set_union(_arrangedVertexIds, recursiveArrangedVertexIds);
   }
-  return arrange_shapes(shapes.slice(0));
 
   console.log('newShapes: ' + newShapes);
 
