@@ -3,6 +3,17 @@
 let VERTEX_RADIUS = 10;
 let EDGE_LENGTH = 10;
 
+/*
+ *     2
+ *    /
+ *   /
+ *  1--3
+ *   \ |
+ *    \|
+ *     4
+ *
+ */
+
 let GRAPH = {1: {'edges': [2, 3, 4]},
              2: {'edges': []},
              3: {'edges': [1, 4]},
