@@ -242,3 +242,7 @@ function add_slider(name, min, max, step, value){
   controlSpan.appendChild(text);
   controlSpan.appendChild(document.createElement('BR'));
 }
+
+function draw_shape(){
+  console.log('draw_shape() called');
+}
