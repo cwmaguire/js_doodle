@@ -194,6 +194,12 @@ function edge_ids(fromId, toIds){
   return edgeIds;
 }
 
+function edge_id(vertexId1, vertexId2){
+  const minVertexId = Math.min(vertexId1, vertexId2);
+  const maxVertexId = Math.max(vertexId1, vertexId2);
+  return `${minVertexId}-${maxVertexId}`;
+}
+
 function unique_edges(graph){
   let uniqueEdges = new Set([]);
   for(const vertex in graph){
