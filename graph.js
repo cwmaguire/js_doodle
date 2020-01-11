@@ -1,7 +1,7 @@
 "use strict";
 
 let VERTEX_RADIUS = 10;
-let EDGE_LENGTH = 50;
+let EDGE_LENGTH = 100;
 
 /*
  *     2
@@ -41,7 +41,7 @@ function init(){
   let x = 200;
   let y = 200;
   let nullStartingAngle = undefined;
-  let firstVertex = vertex_shape(x, y);
+  let firstVertex = vertex_shape('1', x, y);
   let initialShapes = [firstVertex];
   let firstId = parseInt(Object.keys(GRAPH)[0]);
   let arrangedEdgeIds = [];
@@ -130,7 +130,7 @@ function arrange_shapes(graph,
     const siblingId = siblingIds[i];
     const edgeId = edge_id(previousId, siblingId);
     const newAngle = paddingAngle + (dAngle * i);
-    const edgeShape = edge_shape(previousX, previousY, newAngle);
+    const edgeShape = edge_shape(edgeId, previousX, previousY, newAngle);
 
     const isEdgeArranged = _arrangedEdgeIds.has(edgeId);
     const isVertexArranged = _arrangedVertexIds.has(siblingId)
@@ -146,7 +146,7 @@ function arrange_shapes(graph,
       _arrangedEdgeIds.add(edgeId);
     }
 
-    let vertexShape = vertex_shape(edgeShape.x2, edgeShape.y2);
+    let vertexShape = vertex_shape(siblingId, edgeShape.x2, edgeShape.y2);
     if(!isVertexArranged){
       newArrangedShapes.push(vertexShape);
       _arrangedVertexIds.add(siblingId);
@@ -173,18 +173,20 @@ function arrange_shapes(graph,
           arranged_vertex_ids: new Set(arrangedVertexIds)}
 }
 
-function vertex_shape(x, y){
+function vertex_shape(id, x, y){
   return {type: 'vertex',
+          id: id,
           x: x,
           y: y};
 }
 
-function edge_shape(x, y, angle){
+function edge_shape(id, x, y, angle){
   let edgeLength = get_control_value('edge_length', 'int');
   let dx = Math.cos(angle) * edgeLength;
   let dy = Math.sin(angle) * edgeLength;
-  console.log(`edge_shape: edgeLength: ${edgeLength}, x1: ${x}, y1: ${y}, dx: ${dx}, dy: ${dy}, x2: ${x + dx}, y2: ${y + dy}`);
+  console.log(`edge_shape: id: ${id}, edgeLength: ${edgeLength}, x1: ${x}, y1: ${y}, dx: ${dx}, dy: ${dy}, x2: ${x + dx}, y2: ${y + dy}`);
   return {type: 'edge',
+          id: id,
           x1: x,
           y1: y,
           x2: x + dx,
@@ -296,8 +298,8 @@ function draw_vertex(ctx, vertex){
   const textOffsetX = vertex.x - radius / 2;
   const textOffsetY = vertex.y + radius / 2;
   ctx.fillStyle = 'white';
-  ctx.font = '16 serif';
-  ctx.fillText('25', textOffsetX, textOffsetY);
+  ctx.font = '16pt serif';
+  ctx.fillText(vertex.id, textOffsetX, textOffsetY);
 }
 
 function draw_edge(ctx, edge){
@@ -307,4 +309,13 @@ function draw_edge(ctx, edge){
   ctx.lineTo(edge.x2, edge.y2);
   ctx.closePath();
   ctx.stroke();
+
+  const width = edge.x2 - edge.x1;
+  const textOffsetX = edge.x1 + width / 2 - 20;
+  const height = edge.y1 - edge.y2;
+  const textOffsetY = edge.y1 - height / 2;
+  //console.log(`Width: ${width}, textOffsetX: ${textOffsetX}, height: ${height}, textOffsetY: ${textOffsetY}`);
+  ctx.fillStyle = 'black';
+  ctx.font = '16pt serif';
+  ctx.fillText(edge.id, textOffsetX, textOffsetY);
 }
