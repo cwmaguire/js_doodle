@@ -183,7 +183,7 @@ function edge_shape(x, y, angle){
   let edgeLength = get_control_value('edge_length', 'int');
   let dx = Math.cos(angle) * edgeLength;
   let dy = Math.sin(angle) * edgeLength;
-  console.log(`edge_shape: edgeLength: ${edgeLength}, x1: ${x}, y2: ${y}, dx: ${dx}, dy: ${dy}, x2: ${x + dx}, y2: ${y + dy}`);
+  console.log(`edge_shape: edgeLength: ${edgeLength}, x1: ${x}, y1: ${y}, dx: ${dx}, dy: ${dy}, x2: ${x + dx}, y2: ${y + dy}`);
   return {type: 'edge',
           x1: x,
           y1: y,
@@ -284,15 +284,20 @@ function draw_vertex(ctx, vertex){
   const startAngle = 0;
   const endAngle = Math.PI * 2;
   const gradient = ctx.createLinearGradient(vertex.x - 20, vertex.y - 20, vertex.x + 20, vertex.y + 20);
-  gradient.addColorStop(0.0, 'green');
-  gradient.addColorStop(0.5, 'cyan');
-  gradient.addColorStop(1.0, 'green');
+  gradient.addColorStop(0.0, 'black');
+  gradient.addColorStop(1.0, '#9090FF');
 
   ctx.fillStyle = gradient;
   ctx.beginPath();
   ctx.ellipse(vertex.x, vertex.y, radius, radius, rotation, startAngle, endAngle);
   ctx.closePath();
   ctx.fill();
+
+  const textOffsetX = vertex.x - radius / 2;
+  const textOffsetY = vertex.y + radius / 2;
+  ctx.fillStyle = 'white';
+  ctx.font = '16 serif';
+  ctx.fillText('25', textOffsetX, textOffsetY);
 }
 
 function draw_edge(ctx, edge){
