@@ -1,6 +1,7 @@
 "use strict";
 
-const scripts = ["b.js",
+const scripts = ["graph.js",
+                 "b.js",
                  "c.js",
                  "d.js",
                  "e.js",
@@ -20,8 +21,7 @@ const scripts = ["b.js",
                  "p.js",
                  "r.js",
                  "fill_with_squares.js",
-                 "fill_with_squares_2.js",
-                 "graph.js"];
+                 "fill_with_squares_2.js"];
 
 let currentScript;
 let isAnimationCancelled = false;
