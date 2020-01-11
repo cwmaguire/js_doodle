@@ -62,8 +62,12 @@ function init(){
 }
 
 function render({context: ctx, state: {h, w, frame, shapes}}){
-  console.log(`render shapes: ${shapes}`);
-  for(let shape of shapes){
+  for(const shape of shapes){
+    let debug = 'shape:';
+    for(const property in shape){
+      debug += ` ${property}: ${shape[property]}`
+    }
+    //console.log(debug);
     draw_shape(ctx, shape);
   }
   return {h: h, w: w, frame: frame, shapes: shapes};
@@ -261,10 +265,11 @@ function add_slider(name, min, max, step, value){
 }
 
 function draw_shape(ctx, shape){
-  console.log('draw_shape() called');
+  let debug = 'draw_shape()';
   for(let prop in shape){
-    console.log(`shape.${prop}: ${shape[prop]}`);
+    debug += ` shape.${prop}: ${shape[prop]}`;
   }
+  console.log(debug);
 
   if(shape.type == 'vertex'){
     draw_vertex(ctx, shape);
