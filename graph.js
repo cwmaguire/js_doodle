@@ -134,13 +134,28 @@ function arrange_shapes(graph,
   const paddingAngle = numArrangedEdges * dAngle;
 
   for(let i = 0; i < siblingIds.length; i++){
+    if(angle === undefined){
+      angle = 0;
+    }
     const siblingId = siblingIds[i];
+    console.log(`Arranging sibling vertex ${siblingId}`);
     const edgeId = edge_id(previousId, siblingId);
-    const newAngle = paddingAngle + (dAngle * i);
+    const adjustedDeltaAngle = (dAngle * i)
+    const tau = (Math.PI * 2);
+    const newAngle = (angle + paddingAngle + adjustedDeltaAngle) % tau;
+    console.log(`tau: ${tau}`);
+    console.log(`Parent angle: ${angle}`);
+    console.log(`Padding angle: ${paddingAngle}`);
+    console.log(`Delta angle: ${dAngle}`);
+    console.log(`Adjusted delta angle: ${adjustedDeltaAngle}`);
+    console.log(`Sibling index: ${i}`);
+    console.log(`Calculated angle: ${newAngle}`);
     const edgeShape = edge_shape(edgeId, previousX, previousY, newAngle);
 
     const isEdgeArranged = _arrangedEdgeIds.has(edgeId);
+    console.log(`is edge ${edgeId} arranged? ${isEdgeArranged}`);
     const isVertexArranged = _arrangedVertexIds.has(siblingId)
+    console.log(`is vertex ${siblingId} arranged? ${isVertexArranged}`);
 
     if(isEdgeArranged && isVertexArranged){
       continue;
