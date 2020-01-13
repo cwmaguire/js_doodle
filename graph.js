@@ -105,6 +105,13 @@ function arrange_shapes(graph,
   const hasEdgesToArrange = numEdges > 0;
 
   console.log(`Arranging vertex ${previousId} with siblings ${siblingIds}`);
+  console.log(`Arranging vertex ${previousId}, has edges to arrange? ${hasEdgesToArrange}`);
+  for(const edgeId of edgeIds){
+    console.log(`Arrange vertex ${previousId}, has edge ${edgeId}`);
+  }
+  for(const edgeId of arrangedEdgeIds){
+    console.log(`Arrange vertex ${previousId}, already arranged edge ${edgeId}`);
+  }
 
   if(hasEdgesToArrange){
     dAngle = 2 * Math.PI / (numEdges);
@@ -136,9 +143,7 @@ function arrange_shapes(graph,
     const isVertexArranged = _arrangedVertexIds.has(siblingId)
 
     if(isEdgeArranged && isVertexArranged){
-      return {arranged_shapes: arrangedShapes.slice(0),
-              arranged_edge_ids: new Set(arrangedEdgeIds),
-              arranged_vertex_ids: new Set(arrangedVertexIds)};
+      continue;
     }
 
     if(!isEdgeArranged){
@@ -146,7 +151,7 @@ function arrange_shapes(graph,
       _arrangedEdgeIds.add(edgeId);
     }
 
-    let vertexShape = vertex_shape(siblingId, edgeShape.x2, edgeShape.y2);
+    const vertexShape = vertex_shape(siblingId, edgeShape.x2, edgeShape.y2);
     if(!isVertexArranged){
       newArrangedShapes.push(vertexShape);
       _arrangedVertexIds.add(siblingId);
