@@ -44,18 +44,19 @@ function init(){
   let firstVertex = vertex_shape('1', x, y);
   let initialShapes = [firstVertex];
   let firstId = parseInt(Object.keys(GRAPH)[0]);
-  let arrangedEdgeIds = [];
-  let arrangedVertexIds = [firstId];
+  let verteces =
+    [{id: firstVertex,
+      x: x,
+      y: y,
+      arc: Math.PI * 2,
+      arc_start: 0}];
   let uniqueEdges = unique_edges(GRAPH);
-  let arrangement = arrange_shapes(GRAPH,
-                                   initialShapes,
-                                   uniqueEdges,
-                                   firstId,
-                                   arrangedEdgeIds,
-                                   arrangedVertexIds,
-                                   x,
-                                   y,
-                                   nullStartingAngle);
+
+  const state = {graph: GRAPH,
+                 shapes: initialShapes,
+                 verteces: verteces};
+  let arrangement = maybe_arrange_shapes(state);
+
   const shapes = arrangement.arranged_shapes;
 
   return {h: h, w: w, frame: 1, shapes: shapes};
@@ -73,62 +74,58 @@ function render({context: ctx, state: {h, w, frame, shapes}}){
   return {h: h, w: w, frame: frame, shapes: shapes};
 }
 
-function arrange_shapes(graph,
-                        arrangedShapes,
-                        uniqueEdges,
-                        previousId,
-                        arrangedEdgeIds,
-                        arrangedVertexIds,
-                        previousX,
-                        previousY,
-                        angle){
+function maybe_graph_to_shapes(state){
 
-  let newArrangedShapes = arrangedShapes.slice(0);
-  const numUniqueEdges = uniqueEdges.size;
-  const numUniqueVerteces = (new Set(Object.keys(graph))).size;
-  const areAllEdgesArranged = arrangedEdgeIds.size >= numUniqueEdges;
-  const areAllVertecesArranged = arrangedVertexIds.size >= numUniqueVerteces;
-
-
-  const isGraphArranged = areAllEdgesArranged && areAllVertecesArranged;
-  if(isGraphArranged){
-    return {arranged_shapes: arrangedShapes.slice(0),
-            arranged_edge_ids: new Set(arrangedEdgeIds),
-            arranged_vertex_ids: new Set(arrangedVertexIds)};
+  if(is_graph_arranged(state)){
+    return {arranged_shapes: state.shapes.slice(0),
+            arranged_edge_ids: new Set(ids_by_type(state.shapes, 'edge')),
+            arranged_vertex_ids: new Set(ids_by_type(state.shapes, 'vertex'))};
   }
 
-  const siblingIds = Array.from(new Set(graph[previousId]['edges']));
-  const edgeIds = edge_ids(previousId, siblingIds);
-  const unarrangedEdges = set_minus(edgeIds, arrangedEdgeIds);
+  graph_to_shapes(state);
+}
+
+// find all the verteces that are connected to the incoming list of verteces
+// sort verteces by loops
+// create a vertex shape for each vertex
+// create an edge shape for each vertex connecting back to previous shell
+// create edge shapes between verteces in same shell
+function graph_to_shapes(state){
+
+  // Each incoming vertex has an arc I can divy up that arc for each of that
+  // vertex' "outer" siblings
+  //
+  // ... and I have a LIST of these verteces, each with its own ark
+
+  //const isShape = (id) => state.shapes.filter(({id: id_}) => id == id_).length > 0;
+
+  const verteces_ = state.verteces.map(verteces);
+
+
+
+  const siblingIds = outer_sibling_ids(state).filter((id) => !isShape(id));
+  const shapes = vertex_shapes(state, siblingIds);
+
+  const getId = ({id: id}) => id;
+  const getSiblings = (id) => GRAPH[id].edges
+  const verteces =  state.verteces.map(getId).flatMap(getSiblings);
+
+  const id = state.id;
+  const siblingIds = unique_siblings(state.graph, id);
+  const edgeIds = edge_ids(id, siblingIds);
+  //const unarrangedEdges = set_minus(edgeIds, arrangedEdgeIds);
   const numEdges = edgeIds.length;
   let dAngle = 0;
   const hasEdgesToArrange = numEdges > 0;
 
-  console.log(`Arranging vertex ${previousId} with siblings ${siblingIds}`);
-  console.log(`Arranging vertex ${previousId}, has edges to arrange? ${hasEdgesToArrange}`);
-  for(const edgeId of edgeIds){
-    console.log(`Arrange vertex ${previousId}, has edge ${edgeId}`);
-  }
-  for(const edgeId of arrangedEdgeIds){
-    console.log(`Arrange vertex ${previousId}, already arranged edge ${edgeId}`);
-  }
+  log_arrange_shapes(id, siblingIds, edgeIds, hasEdgesToArrange);
 
   if(hasEdgesToArrange){
     dAngle = 2 * Math.PI / (numEdges);
-  }else{
-    return {arranged_shapes: arrangedShapes.slice(0),
-            arranged_edge_ids: new Set(arrangedEdgeIds),
-            arranged_vertex_ids: new Set(arrangedVertexIds)};
   }
 
   const numArrangedEdges = numEdges - unarrangedEdges.size;
 
-  // draw undrawn child edges and undrawn child verteces
-  // (an drawn vertex might not have a connected edge:
-  //       a
-  //      / \
-  //     b--c
-  //  if we draw a--b, then b--c we still need a--c)
   let _arrangedEdgeIds = new Set(arrangedEdgeIds);
   let _arrangedVertexIds = new Set(arrangedVertexIds);
   const paddingAngle = numArrangedEdges * dAngle;
@@ -143,35 +140,45 @@ function arrange_shapes(graph,
     const adjustedDeltaAngle = (dAngle * i)
     const tau = (Math.PI * 2);
     const newAngle = (angle + paddingAngle + adjustedDeltaAngle) % tau;
-    console.log(`tau: ${tau}`);
-    console.log(`Parent angle: ${angle}`);
-    console.log(`Padding angle: ${paddingAngle}`);
-    console.log(`Delta angle: ${dAngle}`);
-    console.log(`Adjusted delta angle: ${adjustedDeltaAngle}`);
-    console.log(`Sibling index: ${i}`);
-    console.log(`Calculated angle: ${newAngle}`);
-    const edgeShape = edge_shape(edgeId, previousX, previousY, newAngle);
 
-    const isEdgeArranged = _arrangedEdgeIds.has(edgeId);
-    console.log(`is edge ${edgeId} arranged? ${isEdgeArranged}`);
-    const isVertexArranged = _arrangedVertexIds.has(siblingId)
-    console.log(`is vertex ${siblingId} arranged? ${isVertexArranged}`);
+    var edgeShape;
 
-    if(isEdgeArranged && isVertexArranged){
-      continue;
-    }
+    //const isEdgeArranged = _arrangedEdgeIds.has(edgeId);
+    //console.log(`is edge ${edgeId} arranged? ${isEdgeArranged}`);
 
-    if(!isEdgeArranged){
-      newArrangedShapes.push(edgeShape);
-      _arrangedEdgeIds.add(edgeId);
+    //const isVertexArranged = has_key(verteces, siblingId)
+    //console.log(`is vertex ${siblingId} arranged? ${isVertexArranged}`);
+
+    //if(isVertexArranged){
+    //edgeShape = edge_between_verteces_shape();
+    //}else{
+    edgeShape = edge_at_angle_shape(edgeId, previousX, previousY, newAngle);
+    //}
+
+    //if(isEdgeArranged && isVertexArranged){
+      //continue;
+    //}
+
+    //if(!isEdgeArranged){
+    newArrangedShapes.push(edgeShape);
+    _arrangedEdgeIds.add(edgeId);
     }
 
     const vertexShape = vertex_shape(siblingId, edgeShape.x2, edgeShape.y2);
-    if(!isVertexArranged){
-      newArrangedShapes.push(vertexShape);
-      _arrangedVertexIds.add(siblingId);
-    }
+    //if(!isVertexArranged){
+    newArrangedShapes.push(vertexShape);
+    _arrangedVertexIds.add(siblingId);
+    //}
 
+  }
+
+  let edges = edges(uniqueEdges, siblingIds);
+
+  for(let i = 0; i < siblingIds.length; i++){
+    
+  }
+
+  for(let i = 0; i < siblingIds.length; i++){
     const arrangedSubGraph =
       arrange_shapes(graph,
                      arrangedShapes,
@@ -191,6 +198,71 @@ function arrange_shapes(graph,
   return {arranged_shapes: newArrangedShapes,
           arranged_edge_ids: new Set(arrangedEdgeIds),
           arranged_vertex_ids: new Set(arrangedVertexIds)}
+}
+
+// what do I get:
+//   a vertex
+// what do I return:
+//   that vertex plus its outer verteces, plus their outer verteces, etc.
+// This will necessarily give me [v1, [v2, [v4], v3, [v5]]] ... which I could just flatten
+//
+// The terminal case is when a vertex doesn't have any outer siblings,
+// then we just return itself as a list [v]
+// Then the previous caller on the stack can flatten all lists and add itself to the
+// beginning (unshift)
+function verteces(state, vertex){
+  // get the verteces for this
+  const vertexIds = get_outer_vertexes(state, vertex);
+
+  // calculate the arc for each vertex
+  const arc = vertex.arc * vertexIds.length;
+  const arcAccumulator = {arc: arc, start: vertex.arc_start};
+  const {verteces: verteces_} = vertexIds.reduce(vertex_with_arc, arcAccumulator);
+
+  // call verteces on each of those
+  const outerVerteces = vertexIds.flatMap(verteces_);
+
+  // unshift vertex onto the front
+  outerVerteces.unshift(vertex);
+
+  // return the resulting list.
+  return outerVertces.slice(0);
+
+ 
+}
+
+function vertex_with_arc(id, {verteces: verteces, arc: arc, arc_start: arcStart}){
+  const newVertex = {id: id, x: x, y: y, arc: arc, arc_start: arc_start};
+  const newVerteces = verteces.slice(0);
+  newVertces.unshift(newVertex);
+  return {verteces: newVerteces, arc: arc, arc_start: arcStart + arc};
+}
+
+function log_arrange_shapes(id, siblingIds, edgeIds, arrangedEdgeIds, hasEdgesToArrange){
+
+  console.log(`Arranging vertex ${id} with siblings ${siblingIds}`);
+  console.log(`Arranging vertex ${id}, has edges to arrange? ${hasEdgesToArrange}`);
+
+  for(const edgeId of edgeIds){
+    console.log(`Arrange vertex ${id}, has edge ${edgeId}`);
+  }
+
+  for(const edgeId of arrangedEdgeIds){
+    console.log(`Arrange vertex ${id}, already arranged edge ${edgeId}`);
+  }
+}
+
+function is_graph_arranged(state){
+  const uniqueEdges = unique_edges(state.graph);
+  const numUniqueEdges = state.unique_edges.size;
+  const numUniqueVerteces = (new Set(Object.keys(state.graph))).size;
+  const areAllEdgesArranged = ids_by_type(state.shapes, 'edge').length >= numUniqueEdges;
+  const areAllVertecesArranged = ids_by_type(state.shapes, 'vertex').length >= numUniqueVerteces;
+  return areAllEdgesArranged && areAllVertecesArranged;
+}
+
+function has_key(dict, key){
+  return (new Set(Object.keys(verteces))).has(key);
 }
 
 function vertex_shape(id, x, y){
@@ -227,6 +299,35 @@ function edge_id(vertexId1, vertexId2){
   return `${minVertexId}-${maxVertexId}`;
 }
 
+function vertex_edges(uniqueEdges, vertexIds){
+  let siblingPairs = vertex_pairs(vertexIds);
+}
+
+function ids_by_type(shapes, type){
+  const isEdge = ({type: t}) => t == type;
+  const getId = ({id: id}) => id;
+  return shapes.filter(idEdge).map(getId);
+}
+
+function next_pairs(graph, id, arc, arcStart){
+  const getId = ({id: id}) => id;
+  const siblingPairs =
+    (id) =>
+      sibling_pairs(id, arc, arcStart);
+  return state.verteces.map(getId).map(getSiblingIds).flatMap(create_pairs);
+}
+
+function sibling_pairs(id, arc, arcStart){
+  const siblings = GRAPH[id].edges
+  const newSiblings = 
+  const angle = arc / siblings
+
+}
+
+function sibling_pairs(vertexIds){
+  return something;
+}
+
 function unique_edges(graph){
   let uniqueEdges = new Set([]);
   for(const vertex in graph){
@@ -238,6 +339,8 @@ function unique_edges(graph){
   }
   return uniqueEdges;
 }
+
+function angles({
 
 function is_black([r, g, b]){
   return r == 0 && g == 0 && b == 0;
