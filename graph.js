@@ -60,40 +60,92 @@ function arrange_shapes(graph, w, h){
 }
 
 function arrange_vector(graph, state, key){
-  // draw myself
-  point = location(state);
+  parentPoint = state.parent_point;
+  point = locate_point(state.angle, parentPoint);
+  line = {type: 'line', p1: parentPoint, p2: point};
 
-  // record my connections
+  connections = siblings_sorted_by_connections(graph, key);
+  // find sibling-to-sibling connections
+  //   e.g. [2-3, 3-2, 3-4, 5-6]
+  // take the next pair
+  //   add them to the list: [2, 3]
+  //   remove 2-3 and 3-2: [3-4, 5-6]
+  // recurse with [2, 3] and [3-4, 5-6]
+  // take the next pair ... Nope, that would give me [2, 3, 3, 4]
 
-  // if I have an unfinished parent return new state
+  // Start with first element of first pair
+  // pairs: [2-3, 3-2, 3-4, 5-6]
+  // first element of first pair: 2
+  // call with (2, [], [2-3, 3-2, 3-4, 5-6])
+  // get connected element: 3
+  // remove connection to 3: [3-2, 3-4, 5-6]
+  // remove opposite connection: [3-4, 5-6]
+  // call with (3, [2], [3-4, 5-6]
+  // get connected element: 4
+  // remove connection to 4: [5-6]
+  // remove opposite connection: [5-6]
+  // call with (4, [2, 3], [5-6])
+  // get connected element: None
+  // get first element of next pair: 5
+  // call with (5, [2, 3, 4], [5-6])
+  // get connected element: 6
+  // remove connection to 6: []
+  // remove opposite connection: []
+  // call with (6, [2, 3, 4, 5], [])
+  // get connected element: None
+  // return [2, 3, 4, 5, 6]
 
-  // else, if I have any unarranged siblings, arrange them.
-  // For each one, if they return a connected sibling, draw
-  // that sibling next and tell it to connect to the previous
-  // sibling
-  //
-  // I can probably just look through the connections and if I find
-  // one between me and something else then I can draw it.
-  // The connections will be populated by siblings when they return
-  // after drawing just themselves.
+  return .reduce(arrangeVector, add_shapes(state, shapes))
 
 }
 
-function location({angle: angle, locations: locations}){
+function siblings_sorted_by_connections(graph, key){
+  return unique_concat(sorted_connected_siblings(graph, key), siblings);
+
+function sorted_connected_siblings(graph, key)
+  let reducer = function(conn, siblings){
+    let connSiblings = conn.split('-').map(i => parseInt(i))
+    return unique_concat(siblings, connSiblings);
+  }
+  let orderedConnectedSiblings = get_sibling_connections(graph, key).sort().reduce(reducer, []);
+}
+
+function unique_concat(arr1, arr2){
+  return arr1.concat(arr2.filter(i => !arr1.includes(i)));
+}
+
+function get_sibling_connections(graph, key){
+  let acc = {connections: new Set(), siblings = graph[key]};
+  return graph[key].reduce(add_sibling_connections, acc);
+}
+
+function add_sibling_connections(acc, key1){
+  let reducer = function (acc, key2) {
+    add_unique_conn_strings(acc, key1, key2);
+  }
+  filter = key => acc.siblings.includes(key);
+  return graph[key].filter(filter).reduce(reducer, acc);
+}
+
+function add_unique_conn_strings(acc, key1, key2){
+  [minKey, maxKey] = [key1, key2].sort();
+  return connections.add(`${minKey}-${maxKey}`);
+}
+
+function locate_point(angle, parentPoint){
   let point;
   if(state.angle == undefined){
     x = state.w / 2;
     y = state.y / 2;
-    point = {x: x, y: y}
+    point = {type: 'point', x: x, y: y}
   }else{
-    parentLocation = state.locations[state.parent]
-    point = calculate_point(state.angle, parentLocation);
+    point = point_from_angle(state.angle, parentPoint);
   }
 
   return point;
 }
 
-function calculate_point(angle, start){
+function point_from_angle(angle, start){
   let x, y, point
   if(angle == 0 || angle == Math.PI * 2){
     point = {x: start.x + EDGE_LENGTH, y: start.y}
@@ -145,6 +197,12 @@ function quad_4_point(angle, start){
   yd = Math.sin(Math.PI - angle) * EDGE_LENGTH;
   y = start.y + yd;
   return {x: x, y: y};
+}
+
+function add_shapes(state, shapes){
+  newShapes = state.shapes.concat(shapes);
+  return {parent_point: state.parent_point,
+          shapes: newShapes};
 }
 
 function render({context: ctx, state: {h, w, frame, shapes}}){
