@@ -1,0 +1,427 @@
+<html>
+<script src="js_util.js"></script>
+<script src="lists.js"></script>
+<script language="javascript">
+
+  const X = 600;
+  const Y = 500;
+  const R = 32;
+  const TAU = Math.PI * 2;
+  const SQUARES = 3;
+
+  function clear(){
+    let c = document.getElementById("c");
+    let ctx = c.getContext("2d");
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, 1500, 1500);
+  }
+
+  function draw(){
+    let c = document.getElementById("c");
+    let ctx = c.getContext("2d");
+
+    for(i = 1; i <= SQUARES; i++){
+      let sideLength = R * i + 1;
+      let sideNext = R * (i + 1) + 1;
+      let circumference = sideLength * 4;
+      let circumferenceNext = sideNext * 4;
+      ctx.beginPath();
+      ctx.strokeRect(X - sideLength / 2, Y - sideLength / 2, sideLength, sideLength);
+      ctx.closePath();
+      ctx.stroke();
+
+      if(i > 0){
+        let numLines = fib(i);
+         console.log(`Num lines: ${numLines}`);
+        // let angle = Math.PI * 2 / numLines;
+        let totalSmall = circumference / numLines;
+        let totalNext = circumferenceNext / numLines;
+        let lineSpacing = totalSmall / numLines;
+        let cellArcLength = lineSpacing;
+        let lineSpacingNext = totalNext / numLines;
+        // console.log(`Angle: ${angle}`);
+
+        for(j = 0; j < numLines; j++){
+
+          let lineStart = lineSpacing * j;
+          let x1 = 0;
+          let y1 = 0;
+          let x2 = 0;
+          let y2 = 0;
+          let side = 1;
+          if(lineStart < sideLength){
+            let cornerX = X + sideLength / 2;
+            let cornerY = Y + sideLength / 2;
+            x1 = cornerX;
+            y1 = cornerY - lineStart;
+            x2 = cornerX + R;
+            y2 = y1;
+            side = 1;
+          }else if(lineStart < sideLength * 2){
+            let cornerX = X + sideLength / 2;
+            let cornerY = Y - sideLength / 2;
+            x1 = cornerX - (lineStart - sideLength);
+            y1 = cornerY;
+            x2 = x1;
+            y2 = y1 - R;
+            side = 2;
+          }else if(lineStart < sideLength * 3){
+            let cornerX = X - sideLength / 2;
+            let cornerY = Y - sideLength / 2;
+            x1 = cornerX;
+            y1 = cornerY + (lineStart - sideLength * 2);
+            x2 = x1 - R;
+            y2 = y1;
+            side = 3;
+          }else if(lineStart < sideLength * 4){
+            let cornerX = X - sideLength / 2;
+            let cornerY = Y + sideLength / 2;
+            x1 = cornerX - (lineStart - sideLength * 3);
+            y1 = cornerY;
+            x2 = x1;
+            y2 = y1 + R;
+            side = 4;
+          }
+
+          ctx.strokeStyle = 'black';
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.closePath();
+          ctx.stroke();
+
+          let red = 255;
+          let green = 255;
+          let blue = 255;
+
+          if(isPrime(count(i, j))){
+            // red = 125 - Math.floor(125 / RINGS) * i;
+            // green = 0;
+            // blue = 0;
+            // red = 230 + Math.floor(Math.random() * 25);
+            // green = 20 + Math.floor(Math.random() * 235);
+            // blue = Math.floor(Math.random() * 80);
+            colour = rgb_color([red, green, blue]);
+            // console.log(`prime [${red}, ${green}, ${blue} = colour: ${colour}`);
+            fill_cell(ctx, cellArcLength, i, j, colour);
+          }else if(count(i, j) % 2 == 0){
+            // blue = 255 - Math.floor(255 / RINGS) * i;
+            // red = 255;
+            // green = 180 + Math.floor(Math.random() * 50);
+            // blue = 0;
+            colour = rgb_color([red, green, blue]);
+            // console.log(`/2 [${red}, ${green}, ${blue} = colour: ${colour}`);
+            fill_cell(ctx, cellArcLength, i, j, colour);
+          }else if(count(i, j) % 3 == 0){
+            // red = 255 - Math.floor(255 / RINGS) * i;
+            // blue = 255 - Math.floor(255 / RINGS) * i;
+            // red = 230;
+            // green = 170 + Math.floor(Math.random() * 20);
+            // blue = 67;
+            // colour = rgb_color([red, green, blue]);
+            console.log(`/3 [${red}, ${green}, ${blue} = colour: ${colour}`);
+            fill_cell(ctx, cellArcLength, i, j, colour);
+          }else if(count(i, j) % 5 == 0){
+            // red = 255 - Math.floor(255 / RINGS) * i;
+            //blue = 255 - Math.floor(255 / RINGS) * i;
+            // red = 255;
+            // green = 80 - Math.floor(Math.random() * 20);
+            // blue = 67;
+            colour = rgb_color([red, green, blue]);
+            // console.log(`/5 [${red}, ${green}, ${blue} = colour: ${colour}`);
+            fill_cell(ctx, cellArcLength, i, j, colour);
+          }else{
+            // red = 100 + Math.random() * 25;
+            // blue = 200 + Math.random() * 55;
+            // green = 0 + Math.random() * 255;
+            red = 255;
+            green = 80 - Math.floor(Math.random() * 60);
+            blue = 50;
+            colour = rgb_color([red, green, blue]);
+            // console.log(`else [${red}, ${green}, ${blue} = colour: ${colour}`);
+            fill_cell(ctx, cellArcLength, i, j, colour);
+          }
+
+          // let cnt = count(i, j);
+          // let textAngle = angle * (j + 0.5);
+          // let textLength = R * (i + 0.5);
+          // let {x: x3, y: y3} = point_from_angle(textAngle, {x: X, y: Y}, textLength);
+          // ctx.strokeText(cnt.toString(), x3, y3);
+        }
+        ctx.strokeStyle = 'black';
+      }
+    }
+
+  }
+
+  function fill_cell(ctx, length, ringIndex, cellIndex, colour, segmentNum = 0){
+    console.log('calling fill_cell');
+    let segments = start_point(ringIndex, cellIndex, length, segmentNum)
+    console.log(`Found ${segments.length} segments`);
+    for([point1, point2, xDiff, yDiff] of segments){
+      fill(ctx, point1, point2, xDiff, yDiff);
+    }
+
+  }
+
+  function fill(ctx, {x: x1, y: y1}, {x: x2, y: y2}, xDiff, yDiff){
+    console.log(`calling fill: ${x1}, ${y1}, ${x2}, ${y2}, ${xDiff}, ${yDiff}`);
+    let interiorPoint1 = point(x1, y1);
+    let interiorPoint2 = point(x2, y2);
+    let exteriorPoint2 = point(x2 + xDiff, y2 + yDiff);
+    let exteriorPoint1 = point(x1 + xDiff, y1 + yDiff);
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = colour;
+
+    ctx.beginPath();
+
+    ctx.moveTo(interiorPoint1.x, interiorPoint1.y);
+    ctx.lineTo(interiorPoint2.x, interiorPoint2.y);
+    ctx.lineTo(exteriorPoint2.x, exteriorPoint2.y);
+    ctx.lineTo(exteriorPoint1.x, exteriorPoint1.y);
+    ctx.lineTo(interiorPoint1.x, interiorPoint1.y);
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.lineWidth = 1;
+    ctx.fillStyle = 'black';
+  }
+
+  function start_point(ringIndex, cellIndex, arcLength, segmentNum, segments = []){
+    let sideLength = (2 * ringIndex + 1) * R;
+    let halfSideLength = sideLength / 2;
+    let filledSegmentLength = (segmentNum * sideLength);
+
+    // The distance around the ring where the cell starts, not an X or Y coordinate
+    let cellArcStart = (cellIndex * length)
+    //let startingLength = cellArcStart + filledSegmentLength;
+    let arcStart = cellArcStart + filledSegmentLength;
+    let sideNumber = Math.floor(arcStart / sideLength) + 1;
+    let unfilledSegmentLength = arcLength - filledSegmentLength;
+
+    let multiplierToStart;
+    let multiplierToEnd;
+    let sideStartX;
+    let sideStartY;
+    let segmentStartX;
+    let segmentStartY;
+    let sideEndX;
+    let sideEndY;
+    let segmentLengthFillable;
+    let segmentLengthRemaining;
+    let segmentEndX;
+    let segmentEndY;
+    let xDiff = 0;
+    let yDiff = 0;
+
+    if(sideNumber == 1){
+      multiplierToStart = ringIndex - 0.5;
+      multiplierToEnd = ringIndex + 0.5;
+
+      sideStartX = X + multiplierToStart * R;
+      sideStartY = Y + multiplierToStart * R;
+
+      segmentStartX = sideStartX;
+      segmentStartY = sideStartY - cellArcStart;
+
+      sideEndX = sideStartX;
+      sideEndY = -multiplierToEnd * R;
+
+      segmentLengthFillable = segmentStartY - sideEndY;
+      segmentLengthRemaining = Math.max(0, unfilledSegmentLength - segmentLengthFillable);
+
+      segmentEndX = sideEndX;
+      segmentEndY = sideEndY + segmentLengthFillable
+
+      xDiff = R;
+
+    }else if(sideNumber == 2){
+      multiplierToStart = ringIndex - 0.5;
+      multiplierToEnd = ringIndex + 0.5;
+
+      sideStartX = X + multiplierToStart * R;
+      sideStartY = Y - multiplierToStart * R;
+
+      if(Math.floor(cellArcStart / sideLength) + 1 == side){
+        segmentStartX = sideStartX - (cellArcStart - sideLength);
+      }else{
+        segmentStartX = sideStartX;
+      }
+      segmentStartY = sideStartY;
+
+      sideEndX = -multiplierToEnd * R;
+      sideEndY = sideStartY;
+
+      segmentLengthFillable = segmentStartX - sideEndX;
+      segmentLengthRemaining = Math.max(0, unfilledSegmentLength - segmentLengthFillable);
+
+      segmentEndX = sideEndX + segmentFillable;
+      segmentEndY = sideEndY;
+
+      yDiff = -R;
+
+    }else if(sideNumber == 3){
+      multiplierToStart = ringIndex - 0.5;
+      multiplierToEnd = ringIndex + 0.5;
+
+      sideStartX = X - multiplierToStart * R;
+      sideStartY = Y - multiplierToStart * R;
+
+      segmentStartX = sideStartX;
+      let doesCellStartOnThisSide = Math.floor(cellArcStart / sideLength) + 1 == side;
+      if(Math.floor(cellArcStart / sideLength) + 1 == side){
+        let cellArcModuloSides = (cellArcStart % sideLength);
+        segmentStartY = sideStartY - cellArcModuloSides;
+      }else{
+        segmentStartY = sideStartY;
+      }
+
+      sideEndX = sideStartX;
+      sideEndY = sideStartY + multiplierToEnd * R;
+
+      segmentLengthFillable = sideEndY - segmentStartY;
+      segmentLengthRemaining = Math.max(0, unfilledSegmentLength - segmentLengthFillable);
+
+      segmentEndX = sideEndX;
+      segmentEndY = sideStartY + segmentFillable;
+
+      xDiff = -R;
+
+    }else{
+      multiplierToStart = ringIndex - 0.5;
+      multiplierToEnd = ringIndex + 0.5;
+
+      sideStartX = X - multiplierToStart * R;
+      sideStartY = Y + multiplierToStart * R;
+
+      let doesCellStartOnThisSide = Math.floor(cellArcStart / sideLength) + 1 == side;
+      if(doesCellStartOnThisSide){
+        let cellArcModuloSides = (cellArcStart % sideLength);
+        segmentStartX = sideStartX + cellArcModuloSides;
+      }else{
+        segmentStartX = sideStartX;
+      }
+      segmentStartY = sideStartY;
+
+      sideEndX = sideStartX + multiplierToEnd * R;
+      sideEndY = sideStartY;
+
+      segmentLengthFillable = sideEndX - segmentStartX;
+      segmentLengthRemaining = Math.max(0, unfilledSegmentLength - segmentLengthFillable);
+
+      segmentEndX = sideEndX;
+      segmentEndY = sideStartY + segmentFillable;
+
+      yDiff = R;
+
+    }
+
+    let startPoint = point(segmentStartX, segmentStartY);
+    let endPoint = point(segmentEndX, segmentEndY);
+    segments.unshift([startPoint, endPoint, xDiff, yDiff]);
+
+    if(segmentLengthRemaining > 0){
+      return start_point(ringIndex, cellIndex, length, segmentNum + 1, segments.slice(0));
+    }else{
+      return segments;
+    }
+  }
+
+  function point(x, y){
+    return {x: x, y: y};
+  }
+
+  function point_add({x: x1, y: y1}, {x: x2, y: y2}){
+    return {x: x1 + x2, y: y1 + y2};
+  }
+
+  function fib(i){
+    if(i == 0){
+      return 0;
+    }else if(i == 1){
+      return 1;
+    }else{
+      return fib(i - 1) + fib(i -2);
+    }
+  }
+
+  function isPrime(x){
+    for(let i = 2, s = Math.sqrt(x); i <= s; i++){
+      if(x % i === 0) return false;
+    }
+    return X > 1;
+  }
+
+  function count(rings, arcs){
+    let cnt = 0;
+    for(let i = 0; i < rings; i++){
+      cnt = cnt + Math.pow(2, i);
+    }
+    return cnt + arcs;
+  }
+
+  function point_from_angle(rawAngle, start, length){
+    let x, y, point;
+    let angle = rawAngle % (Math.PI * 2)
+    if(angle == 0 || angle == Math.PI * 2){
+      point = {x: start.x + length, y: start.y}
+    }else if(angle < (Math.PI / 2)){
+      point = quad_1_point(angle, start, length);
+    }else if(angle == Math.PI / 2){
+      point = {x: start.x, y: start.y - length}
+    }else if(angle > (Math.PI / 2) && angle < Math.PI){
+      point = quad_2_point(angle, start, length);
+    }else if(angle == Math.PI){
+      point = {x: start.x - length, y: start.y}
+    }else if(angle > Math.PI && angle < (3 / 2 * Math.PI)){
+      point = quad_3_point(angle, start, length);
+    }else if(angle == (3 / 2 * Math.PI)){
+      point = {x: start.x, y: start.y + length}
+    }else if(angle > (3 / 2 * Math.PI) && angle < (2 * Math.PI)){
+      point = quad_4_point(angle, start, length);
+    }
+    return point;
+  }
+
+  function quad_1_point(angle, start, length){
+    xd = Math.cos(angle) * length;
+    x = start.x + xd;
+    yd = Math.sin(angle) * length;
+    y = start.y - yd;
+    return {x: x, y: y};
+  }
+
+  function quad_2_point(angle, start, length){
+    xd = Math.cos(Math.PI - angle) * length;
+    x = start.x - xd;
+    yd = Math.sin(Math.PI - angle) * length;
+    y = start.y - yd;
+    return {x: x, y: y};
+  }
+
+  function quad_3_point(angle, start, length){
+    xd = Math.cos(angle - Math.PI) * length;
+    x = start.x - xd;
+    yd = Math.sin(angle - Math.PI) * length;
+    y = start.y + yd;
+    return {x: x, y: y};
+  }
+
+  function quad_4_point(angle, start, length){
+    xd = Math.cos(2 * Math.PI - angle) * length;
+    x = start.x + xd;
+    yd = Math.sin(2 * Math.PI - angle) * length;
+    y = start.y + yd;
+    return {x: x, y: y};
+  }
+
+</script>
+<body onload="draw();">
+  <canvas id="c" width=1200 height=1200></canvas>
+</body>
+</html>
+
